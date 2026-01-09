@@ -19,7 +19,8 @@ VOLUME /app/var/
 # hadolint ignore=DL3008
 RUN apk update && apk add --no-cache \
 	file \
-	git
+	git \
+    bash
 
 RUN set -eux; \
 	install-php-extensions \
@@ -38,7 +39,7 @@ COPY --link \
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Transport to use by Mercure (default to Bolt)
-ENV MERCURE_TRANSPORT_URL=bolt:///data/mercure.db
+ENV MERCURE_EXTRA_DIRECTIVES="transport bolt:///data/mercure.db"
 
 ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 

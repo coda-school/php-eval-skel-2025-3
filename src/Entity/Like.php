@@ -17,7 +17,7 @@ class Like extends BaseEntity
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user_id = null;
+    private ?User $userid = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -30,12 +30,12 @@ class Like extends BaseEntity
 
     public function getUserId(): ?User
     {
-        return $this->user_id;
+        return $this->userid;
     }
 
     public function setUserId(?User $user_id): static
     {
-        $this->user_id = $user_id;
+        $this->userid = $user_id;
 
         return $this;
     }

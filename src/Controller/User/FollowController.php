@@ -13,7 +13,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("ROLE_USER")]
 final class FollowController extends AbstractController
 {
-    #[Route('/user/{id}/follow', name: 'follow', methods: ['POST'])]
+    #[Route('/user/{id}/follow', name: 'user_follow', methods: ['POST'])]
     public function follow(
         User $userToFollow,
         EntityManagerInterface $entityManager,

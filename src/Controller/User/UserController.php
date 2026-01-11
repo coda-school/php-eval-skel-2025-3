@@ -11,7 +11,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("ROLE_USER")]
 final class UserController extends AbstractController
 {
-    #[Route('/user/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Route('/user/{id}', name: 'user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
         return $this->render('user/show.html.twig', [

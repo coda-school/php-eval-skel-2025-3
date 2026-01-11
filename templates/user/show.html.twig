@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ user.username }}{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen bg-gray-100 py-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            {# Carte de profils #}
+            <div class="bg-white shadow-xl rounded-2xl overflow-hidden mb-8">
+                <div class="h-32 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+
+                <div class="px-4 pb-6">
+                    <div class="relative flex justify-center">
+                        {# Partie Avatar #}
+                        <div class="-mt-16 ring-4 ring-white rounded-full overflow-hidden w-32 h-32 bg-white">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar }}" alt="Avatar" class="w-full h-full object-cover">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ user.username }}&size=128&background=random" class="w-full h-full object-cover" alt="Avatar">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        {# Infos #}
+                        <h2 class="text-3xl font-bold text-gray-900">{{ user.username }}</h2>
+
+                        {% if user.bio %}
+                            <p class="text-gray-600 mt-2 max-w-lg mx-auto">{{ user.bio }}</p>
+                        {% else %}
+                            <p class="text-gray-400 italic mt-2">Pas encore de bio pour cet utilisateur.</p>
+                        {% endif %}
+
+                        {# stats #}
+                        <div class="flex justify-center gap-8 my-6 border-t border-b border-gray-100 py-4">
+                            <div class="text-center">
+                                <span class="block text-2xl font-bold text-gray-800">{{ user.tweets|length }}</span>
+                                <span class="text-sm text-gray-500 uppercase tracking-wide">Stelas</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-2xl font-bold text-gray-800">{{ user.following|length }}</span>
+                                <span class="text-sm text-gray-500 uppercase tracking-wide">Abonnements</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-2xl font-bold text-gray-800">{{ user.followers|length }}</span>
+                                <span class="text-sm text-gray-500 uppercase tracking-wide">Abonnés</span>
+                            </div>
+                        </div>
+
+                        {# Boutons d'action #}
+                        {% if app.user and app.user != user %} {# Cas où un user est sur le profil d'un autre pas sur le sien #}
+                            <form action="{{ path('app_follow', {id: user.id}) }}" method="POST">
+                                {% if app.user in user.followers %}
+                                    {# Bouton unfollow #}
+                                    <button type="submit" class="group relative inline-flex items-center justify-center px-8 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all duration-200">
+                                        <span>Abonné</span>
+                                        <span class="absolute inset-0 flex items-center justify-center text-red-600 opacity-0 group-hover:opacity-100 font-bold bg-red-50 rounded-full border border-red-300">
+                                        Ne plus suivre
+                                    </span>
+                                    </button>
+                                {% else %}
+                                    {# Bouton follow #}
+                                    <button type="submit" class="px-8 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-md transition-colors duration-200">
+                                        Suivre
+                                    </button>
+                                {% endif %}
+                            </form>
+                        {% endif %}
+
+                        {% if app.user == user %}
+                            <a href="#" class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors">
+                                Modifier mon profil
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# LES STELAS #}
+            <h3 class="text-xl font-bold text-gray-800 mb-4 px-2">Les derniers Stelas</h3>
+
+            <div class="space-y-4">
+                {% for tweet in user.tweets %}
+                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
+                        <div class="flex items-start space-x-4">
+                            {# Mini avatar sur stelas #}
+                            <div class="flex-shrink-0">
+                                {% if user.avatar %}
+                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ user.avatar }}" alt="">
+                                {% else %}
+                                    <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="">
+                                {% endif %}
+                            </div>
+
+                            {# Contenu du tweet #}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {{ user.username }}
+                                    </p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ tweet.createdDate|date('d M • H:i') }}
+                                    </p>
+                                </div>
+                                <p class="mt-1 text-gray-800 text-base">
+                                    {{ tweet.content }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300">
+                        <p class="text-gray-500">Silence radio...<br>Cet utilisateur n'a encore rien posté.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

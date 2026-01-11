@@ -13,7 +13,9 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
-
 .DS_Store
 
 .idea/
+compose.override.yaml
+.env
+.env.dev

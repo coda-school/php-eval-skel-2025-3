@@ -4,16 +4,19 @@ namespace App\Entity;
 
 use App\Entity\Impl\BaseEntity;
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -46,7 +49,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     private ?string $avatar = null;
 
     #[ORM\Column]
-    private ?bool $isVerified = null;
+    private ?bool $isVerified = false;
 
     /**
      * @var Collection<int, self>
@@ -75,6 +78,9 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         $this->following = new ArrayCollection();
         $this->followers = new ArrayCollection();
         $this->tweets = new ArrayCollection();
+        $this->roles = ['ROLE_USER'];
+        $this->isVerified = false;
+        $this->createdDate = new DateTime();
     }
 
     public function getId(): ?int

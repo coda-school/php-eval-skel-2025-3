@@ -51,14 +51,18 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     /**
      * @var Collection<int, self>
      */
-    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'followers')]
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'followers', fetch: 'EXTRA_LAZY')]
+    #[ORM\JoinTable(name: 'user_user')]
+    #[ORM\JoinColumn(name: 'user_source', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'user_target', referencedColumnName: 'id')]
     private Collection $following;
 
     /**
      * @var Collection<int, self>
      */
-    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'following')]
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'following', fetch: 'EXTRA_LAZY')]
     private Collection $followers;
+
 
     /**
      * @var Collection<int, Tweet>

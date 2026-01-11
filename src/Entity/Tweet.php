@@ -21,20 +21,20 @@ class Tweet extends BaseEntity
     private ?string $imageFilename = null;
 
     #[ORM\Column(options: ['default'=>0])]
-    private ?int $viewsCount = null;
+    private ?int $viewsCount = 0;
 
     #[ORM\Column(options: ['default'=>0])]
-    private ?int $likesCount = null;
+    private ?int $likesCount = 0;
 
     #[ORM\ManyToOne(inversedBy: 'tweets')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
     #[ORM\Column(options: ['default'=>0])]
-    private ?int $retweetCount = null;
+    private ?int $retweetCount = 0;
 
     #[ORM\Column(options: ['default'=>0])]
-    private ?int $replyCount = null;
+    private ?int $replyCount = 0;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     private ?self $parentTweet = null;

@@ -12,8 +12,8 @@ abstract class BaseEntity
     protected \DateTime $createdDate;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    protected User $createdBy;
+    #[ORM\JoinColumn(nullable: true)] # Autoriser l'état null (explication dans notre doc commune)
+    protected ?User $createdBy = null;
 
     #[ORM\Column(name: 'updated_date', type: Types::DATETIME_MUTABLE, nullable: true)]
     protected null|\DateTime $updatedDate;

@@ -87,6 +87,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "fakerphp/faker": "^1.24",
         "jolicode/gif-exception-bundle": "^1.9",
         "symfony/maker-bundle": "^1.65",
         "symfony/stopwatch": "7.4.*",

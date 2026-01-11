@@ -22,6 +22,9 @@ RUN apk update && apk add --no-cache \
 	git \
     bash
 
+# Régler le pb Warning à l'installation de dépendances avec composer require
+RUN git config --global --add safe.directory /app
+
 RUN set -eux; \
 	install-php-extensions \
 	@composer \

@@ -13,8 +13,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("ROLE_USER")]
 final class FollowController extends AbstractController
 {
-    #[Route('/{_locale}/user/{id}/follow', name: 'user_follow', requirements: ['_locale' => 'en|fr'])]
-    #[Route('/user/{id}/follow', name: 'user_follow_redirect', methods: ['POST'])]
+    #[Route('/{_locale}/user/{id}/follow', name: 'app_user_follow', requirements: ['_locale' => 'en|fr'])]
+    #[Route('/user/{id}/follow', name: 'app_user_follow_redirect', methods: ['POST'])]
     public function follow(
         User $userToFollow,
         EntityManagerInterface $entityManager,
@@ -24,14 +24,12 @@ final class FollowController extends AbstractController
         /** @var User $currentUser */
         $currentUser = $this->getUser();
 
-        //Vérifier que ce n'est pas un suivi récurssif (Un user ne peut se suivre lui même)
         if($currentUser->getId() === $userToFollow->getId()) {
             return $this->redirect($request->headers->get('referer') ?? '/');
         }
 
-        //Double logique pour vérifier si il suit déjà le ..toFollow et dans ce cas inverser l'état du suivi
         if($currentUser->getFollowing()->contains($userToFollow)){
-            $currentUser->removeFollowing($userToFollow); //retirer de la liste des suivis
+            $currentUser->removeFollowing($userToFollow);
         } else {
             $currentUser->addFollowing($userToFollow);
         }

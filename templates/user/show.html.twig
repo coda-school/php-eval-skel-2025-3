@@ -50,7 +50,7 @@
 
                         {# Boutons d'action #}
                         {% if app.user and app.user != user %} {# Cas où un user est sur le profil d'un autre pas sur le sien #}
-                            <form action="{{ path('user_follow', {id: user.id}) }}" method="POST">
+                            <form action="{{ path('app_user_follow', {id: user.id, _locale: app.request.locale}) }}" method="POST">
                                 {% if app.user in user.followers %}
                                     {# Bouton unfollow #}
                                     <button type="submit" class="group relative inline-flex items-center justify-center px-8 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all duration-200">

@@ -2,7 +2,7 @@
 # STELA - GRIMOIRE DES PAGES (FR)
 # =============================================================================
 
-security:
+stela:
     title: "Stela"
     subtitle: "Le Scribe attend votre vérité"
     login_subtitle: "Incarnez votre vérité"
@@ -42,3 +42,23 @@ security:
     connected:
         text: "Déjà incarné :"
         button: "Dissiper l'esprit"
+
+    # Tweets
+    tweet:
+        single: "Stèle"
+        plural: "Stèles"
+        last: "Dernières Stèles"
+        nothing: "Cet Éponyme n'a pas encore marqué la pierre."
+
+    # Profile
+    profile:
+        bio:
+            empty: "n'a pas défini de biographie."
+        subscriptions: "Panthéon"
+        followers: "Témoins"
+        actions:
+            follow: "Traquer"
+            unfollow: "Abandonner la traque"
+            edit_profile: "Façonner mon Image"
+        status:
+            following: "Sous surveillance"

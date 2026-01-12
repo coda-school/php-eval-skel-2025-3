@@ -29,22 +29,22 @@
                         {% if user.bio %}
                             <p class="text-gray-600 mt-2 max-w-lg mx-auto">{{ user.bio }}</p>
                         {% else %}
-                            <p class="text-gray-400 italic mt-2">Pas encore de bio pour cet utilisateur.</p>
+                            <p class="text-gray-400 italic mt-2">{{ user.username }} {{ 'stela.profile.bio.empty'|trans({}, 'stela') }}</p>
                         {% endif %}
 
                         {# stats #}
                         <div class="flex justify-center gap-8 my-6 border-t border-b border-gray-100 py-4">
                             <div class="text-center">
                                 <span class="block text-2xl font-bold text-gray-800">{{ user.tweets|length }}</span>
-                                <span class="text-sm text-gray-500 uppercase tracking-wide">Stelas</span>
+                                <span class="text-sm text-gray-500 uppercase tracking-wide">{{ 'stela.tweet.plural'|trans({}, 'stela') }}</span>
                             </div>
                             <div class="text-center">
                                 <span class="block text-2xl font-bold text-gray-800">{{ user.following|length }}</span>
-                                <span class="text-sm text-gray-500 uppercase tracking-wide">Abonnements</span>
+                                <span class="text-sm text-gray-500 uppercase tracking-wide">{{ 'stela.profile.subscriptions'|trans({}, 'stela') }}</span>
                             </div>
                             <div class="text-center">
                                 <span class="block text-2xl font-bold text-gray-800">{{ user.followers|length }}</span>
-                                <span class="text-sm text-gray-500 uppercase tracking-wide">Abonnés</span>
+                                <span class="text-sm text-gray-500 uppercase tracking-wide">{{ 'stela.profile.followers'|trans({}, 'stela') }}</span>
                             </div>
                         </div>
 
@@ -54,15 +54,15 @@
                                 {% if app.user in user.followers %}
                                     {# Bouton unfollow #}
                                     <button type="submit" class="group relative inline-flex items-center justify-center px-8 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all duration-200">
-                                        <span>Abonné</span>
+                                        <span>{{ 'stela.profile.status.following'|trans({}, 'stela') }}</span>
                                         <span class="absolute inset-0 flex items-center justify-center text-red-600 opacity-0 group-hover:opacity-100 font-bold bg-red-50 rounded-full border border-red-300">
-                                        Ne plus suivre
+                                        {{ 'stela.profile.actions.unfollow'|trans({}, 'stela') }}
                                     </span>
                                     </button>
                                 {% else %}
                                     {# Bouton follow #}
                                     <button type="submit" class="px-8 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-md transition-colors duration-200">
-                                        Suivre
+                                        {{ 'stela.profile.actions.follow'|trans({}, 'stela') }}
                                     </button>
                                 {% endif %}
                             </form>
@@ -70,7 +70,7 @@
 
                         {% if app.user == user %}
                             <a href="#" class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors">
-                                Modifier mon profil
+                                {{ 'stela.profile.actions.edit_profile'|trans({}, 'stela') }}
                             </a>
                         {% endif %}
                     </div>
@@ -78,7 +78,7 @@
             </div>
 
             {# LES STELAS #}
-            <h3 class="text-xl font-bold text-gray-800 mb-4 px-2">Les derniers Stelas</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-4 px-2">{{ 'stela.tweet.last'|trans({}, 'stela') }}</h3>
 
             <div class="space-y-4">
                 {% for tweet in user.tweets %}
@@ -111,7 +111,7 @@
                     </div>
                 {% else %}
                     <div class="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300">
-                        <p class="text-gray-500">Silence radio...<br>Cet utilisateur n'a encore rien posté.</p>
+                        <p class="text-gray-500">{{ 'stela.tweet.nothing'|trans({}, 'stela') }}</p>
                     </div>
                 {% endfor %}
             </div>

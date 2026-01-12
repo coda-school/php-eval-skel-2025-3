@@ -2,7 +2,7 @@
 # STELA - PAGES GRIMOIRE (EN)
 # =============================================================================
 
-security:
+stela:
     title: "Stela"
     subtitle: "The Scribe awaits your truth"
     login_subtitle: "Embody your truth"
@@ -42,3 +42,23 @@ security:
     connected:
         text: "Already embodied :"
         button: "Dispel the spirit"
+
+    # Tweets
+    tweet:
+        single: "Stele"
+        plural: "Stelea"
+        last: "Last Stelea"
+        nothing: "This Eponym has yet to leave a mark."
+
+    # Profile
+    profile:
+        bio:
+            empty: "did not defined a biography."
+        subscriptions: "Pantheon"
+        followers: "Witnesses"
+        actions:
+            follow: "Track"
+            unfollow: "Lose the Trail"
+            edit_profile: "Forge My Trace"
+        status:
+            following: "Under Watch"

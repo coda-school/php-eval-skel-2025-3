@@ -19,7 +19,6 @@ class LocaleRedirectionSubscriber implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-
         if (!$event->isMainRequest()) {
             return;
         }
@@ -30,17 +29,16 @@ class LocaleRedirectionSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if ($path === '/') {
+            return;
+        }
+
+        // 3. Pour toutes les autres pages (ex: /register), on check la locale
         if (!preg_match('#^/(fr|en)(/|$)#', $path)) {
             $preferredLocale = $request->getPreferredLanguage(['en', 'fr']) ?: $this->defaultLocale;
 
-            if ($path === '/') {
-                $newPath = '/' . $preferredLocale . '/login';
-            } else {
-                $newPath = '/' . $preferredLocale . $path;
-            }
-            // -----------------------
-
-            $event->setResponse(new RedirectResponse($newPath));
+            $redirectUrl = '/' . $preferredLocale . $path;
+            $event->setResponse(new RedirectResponse($redirectUrl));
         }
     }
 

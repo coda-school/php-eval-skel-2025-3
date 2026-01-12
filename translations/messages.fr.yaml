@@ -1,0 +1,9 @@
+home:
+    title: "Accueil"
+    welcome_subtitle: "L'interface entre les époques est désormais synchronisée."
+    action:
+        login: "S'incarner"
+        register: "Rejoindre"
+    desc:
+        login: "Utilisez votre Hibouriel pour rejoindre votre session sécurisée."
+        register: "Établissez votre Éponyme et liez votre destin à la Stèle."

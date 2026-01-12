@@ -1,7 +1,4 @@
+# config/routes.yaml
 controllers:
     resource: ../src/Controller/
-    type: attribute
-
-root_redirect:
-    resource: ../src/Controller/IndexController.php
     type: attribute

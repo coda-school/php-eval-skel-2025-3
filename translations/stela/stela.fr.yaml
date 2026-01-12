@@ -1,0 +1,44 @@
+# =============================================================================
+# STELA - GRIMOIRE DES PAGES (FR)
+# =============================================================================
+
+security:
+    title: "Stela"
+    subtitle: "Le Scribe attend votre vérité"
+    login_subtitle: "Incarnez votre vérité"
+
+    # Libellés des champs
+    fields:
+        username: "Éponyme"
+        email: "Hibouriel"
+        email_placeholder: "hibou@domaine.com"
+        password: "Sceau Secret"
+
+    # Critères de force du mot de passe
+    checklist:
+        check1: "8 car."
+        check2: "minuscule"
+        check3: "majuscule"
+        check4: "chiffre"
+        check5: "spécial"
+
+    # Actions et Boutons
+    buttons:
+        register: "Graver mon Serment"
+        register2: "Prêter Serment"
+        login: "S'incarner"
+
+    # Liens de navigation
+    links:
+        already_member: "Vous faites déjà partie des fidèles ?"
+        new_member: "Nouveau par ici ?"
+
+    # Section du consentement
+    terms:
+        title: "Le Rituel"
+        text: "Je consens à respecter les décrets des Gardiens."
+
+    # État de connexion
+    connected:
+        text: "Déjà incarné :"
+        button: "Dissiper l'esprit"

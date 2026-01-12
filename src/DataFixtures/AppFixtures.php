@@ -14,7 +14,7 @@ class AppFixtures extends Fixture
 {
     // On récupère le hasher pour le Cryptage du mot de passe
     public function __construct(
-        private UserPasswordHasherInterface $hasher
+        private readonly UserPasswordHasherInterface $hasher
     ) {}
 
     public function load(ObjectManager $manager): void

@@ -1,0 +1,14 @@
+form:
+    username:
+        not_blank: "L'Éponyme ne peut rester dans l'ombre."
+        min_length: "L'Éponyme doit faire au moins {{ limit }} caractères."
+        max_length: "L'Éponyme doit faire au maximum {{ limit }} caractères."
+    email:
+        not_blank: "L'Hibouriel est requis pour le serment."
+        invalid: "L'adresse n'est pas un Hibouriel valide."
+    password:
+        not_blank: "Le Sceau Secret est obligatoire."
+        min_length: "Le Sceau doit contenir au moins {{ limit }} caractères."
+        regex_error: "Le Sceau ne respecte pas les critères de sécurité."
+    terms:
+        is_true: "Vous devez accepter le rituel pour poursuivre."

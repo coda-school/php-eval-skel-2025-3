@@ -1,38 +1,190 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}S'incarner - STELA{% endblock %}
 
 {% block body %}
-    <form method="post">
-        {% if error %}
-            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-        {% endif %}
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 stela-bg font-serif relative overflow-hidden">
 
-        {% if app.user %}
-            <div class="mb-3">
-                You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+        {# Bloc Principal : La Stèle #}
+        <div class="stela-slab safari-fix {% if error %}stela-shake{% endif %}">
+
+            {# Effet de texture superposé #}
+            <div class="stela-texture"></div>
+
+            <div class="relative z-10 p-8 border border-[#c5a059]/10 h-full flex flex-col">
+
+                {# En-tête : Identité visuelle #}
+                <div class="text-center mb-10 space-y-3">
+                    <h1 class="text-5xl text-[#c5a059] uppercase tracking-[0.3em] font-bold pl-4 font-cinzel" style="text-shadow: 0 4px 10px rgba(0,0,0,0.8);">
+                        {{ 'security.title'|trans({}, 'stela') }}
+                    </h1>
+                    <div class="h-[1px] w-32 bg-gradient-to-r from-transparent via-[#c5a059]/70 to-transparent mx-auto"></div>
+                    <p class="text-[#8c7b6c] text-xs uppercase tracking-[0.2em] pt-2 font-bold">
+                        {{ 'security.login_subtitle'|trans({}, 'stela') }}
+                    </p>
+                </div>
+
+                <form method="post" class="space-y-6 flex-grow" novalidate>
+
+                    {#
+                    =========================================
+                    MESSAGES D'ERREUR (CADRE ROUGE)
+                    Affiché en cas d'identifiants incorrects
+                    =========================================
+                    #}
+                    {% if error %}
+                        <div class="stela-alert-error">
+                            <span class="text-[#ef4444] text-lg">⚠</span>
+                            <span class="stela-alert-text">
+                                {{ error.messageKey|trans(error.messageData, 'security') }}
+                            </span>
+                        </div>
+                    {% endif %}
+
+                    {# État de connexion actuel #}
+                    {% if app.user %}
+                        <div class="p-3 border border-[#c5a059]/20 bg-[#c5a059]/5 mb-6 text-center">
+                            <p class="text-[10px] text-[#c5a059] uppercase tracking-widest font-bold">
+                                {{ 'security.connected.text'|trans({}, 'stela') }} {{ app.user.userIdentifier }}
+                            </p>
+                            <a href="{{ logout_path() }}" class="text-[10px] text-[#78716c] hover:text-[#fffcf5] underline transition-colors">{{ 'security.connected.button'|trans({}, 'stela') }}</a>
+                        </div>
+                    {% endif %}
+
+                    {#
+                    =========================
+                    SAISIE : HIBOURIEL (Email)
+                    =========================
+                    #}
+                    <div class="stela-group group">
+                        <label for="username" class="stela-label">{{ 'security.fields.email'|trans({}, 'stela') }}</label>
+                        <div class="stela-input-groove">
+                            <input type="email"
+                                   value="{{ last_username }}"
+                                   name="_username"
+                                   id="username"
+                                   class="stela-input"
+                                   placeholder="hibou@domaine.com"
+                                   autocomplete="email"
+                                   required
+                                   autofocus>
+                            <span id="bar-email" class="stela-bar"></span>
+                        </div>
+                    </div>
+
+                    {#
+                    =========================
+                    SAISIE : SCEAU SECRET (Mdp)
+                    =========================
+                    #}
+                    <div class="stela-group group">
+                        <label for="password" class="stela-label">{{ 'security.fields.password'|trans({}, 'stela') }}</label>
+                        <div class="stela-input-groove">
+                            <input type="password"
+                                   name="_password"
+                                   id="password"
+                                   class="stela-input pr-12"
+                                   placeholder="••••••••••••"
+                                   autocomplete="current-password"
+                                   required>
+
+                            <button type="button" id="toggle-password">
+                                <svg id="eye-closed" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                                <svg id="eye-open" class="hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                            <span id="bar-password" class="stela-bar"></span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    {# Bouton d'action principal #}
+                    <button type="submit" class="stela-btn-original group safari-fix">
+                        <span class="stela-btn-line top"></span>
+                        <span class="stela-btn-shadow"></span>
+                        <span class="stela-btn-content">
+                            <span class="stela-btn-decor">- ⌬ -</span>
+                            <span class="stela-btn-text">S'incarner</span>
+                            <span class="stela-btn-decor">- ⌬ -</span>
+                        </span>
+                        <span class="stela-btn-glow"></span>
+                        <span class="stela-btn-click"></span>
+                        <span class="stela-btn-line bottom"></span>
+                    </button>
+                </form>
+
+                {# Navigation vers l'inscription #}
+                <div class="stela-link-container">
+                    <div class="stela-link-line"></div>
+                    <p class="text-[#78716c] text-[10px] uppercase tracking-[0.25em] mb-4 font-bold mt-4">{{ 'security.links.new_member'|trans({}, 'stela') }}</p>
+                    <a href="{{ path('app_register', {'_locale': app.request.locale}) }}" class="stela-link group">
+                        <span class="stela-link-arrow left">►</span>
+                        <span class="stela-link-text">
+                            {{ 'security.buttons.register2'|trans({}, 'stela') }}
+                            <span class="stela-link-underline"></span>
+                        </span>
+                        <span class="stela-link-arrow right">◄</span>
+                    </a>
+                </div>
             </div>
-        {% endif %}
+        </div>
+    </div>
 
-        <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="username">Email</label>
-        <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" required autofocus>
-        <label for="password">Password</label>
-        <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
-        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
 
-        {#
-            Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-            See https://symfony.com/doc/current/security/remember_me.html
+            /* =========================================
+               1. LOGIQUE DE VALIDATION VISUELLE
+               Gère la coloration des barres (Or/Rouge)
+               ========================================= */
+            const fields = [
+                { el: document.getElementById('username'), bar: document.getElementById('bar-email'), req: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+                { el: document.getElementById('password'), bar: document.getElementById('bar-password'), req: /^.+$/ }
+            ];
 
-            <div class="checkbox mb-3">
-                <input type="checkbox" name="_remember_me" id="_remember_me">
-                <label for="_remember_me">Remember me</label>
-            </div>
-        #}
+            fields.forEach(item => {
+                if (!item.el) return;
 
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
-        </button>
-    </form>
+                const updateVisualState = () => {
+                    // Masquage si le champ est vide
+                    if (item.el.value.length === 0) {
+                        item.bar.style.opacity = '0';
+                    } else {
+                        // Coloration selon la validité de la saisie
+                        item.bar.style.opacity = '1';
+                        const isValid = item.req.test(item.el.value);
+
+                        if (isValid) {
+                            item.bar.classList.add('valid');
+                            item.bar.classList.remove('invalid');
+                        } else {
+                            item.bar.classList.add('invalid');
+                            item.bar.classList.remove('valid');
+                        }
+                    }
+                };
+
+                item.el.addEventListener('input', updateVisualState);
+                updateVisualState();
+            });
+
+            /* =========================================
+               2. VISIBILITÉ DU MOT DE PASSE
+
+               ========================================= */
+            const passInput = document.getElementById('password');
+            const toggleBtn = document.getElementById('toggle-password');
+            const eyeOpen = document.getElementById('eye-open');
+            const eyeClosed = document.getElementById('eye-closed');
+
+            if (toggleBtn && passInput) {
+                toggleBtn.addEventListener('click', () => {
+                    const isPass = passInput.type === 'password';
+                    passInput.type = isPass ? 'text' : 'password';
+                    eyeOpen.classList.toggle('hidden', !isPass);
+                    eyeClosed.classList.toggle('hidden', isPass);
+                });
+            }
+        });
+    </script>
 {% endblock %}

@@ -1,0 +1,44 @@
+# =============================================================================
+# STELA - PAGES GRIMOIRE (EN)
+# =============================================================================
+
+security:
+    title: "Stela"
+    subtitle: "The Scribe awaits your truth"
+    login_subtitle: "Embody your truth"
+
+    # Field Labels
+    fields:
+        username: "Eponym"
+        email: "E-Hoot"
+        email_placeholder: "hibou@domain.com"
+        password: "Secret Seal"
+
+    # Password Strength Criteria
+    checklist:
+        check1: "8 char."
+        check2: "lowercase"
+        check3: "uppercase"
+        check4: "number"
+        check5: "special"
+
+    # Actions and Buttons
+    buttons:
+        register: "Engrave my Oath"
+        register2: "Take an Oath"
+        login: "Embody Yourself"
+
+    # Navigation Links
+    links:
+        already_member: "Are you already among the faithful?"
+        new_member: "New here?"
+
+    # Consent Section
+    terms:
+        title: "The Ritual"
+        text: "I consent to respect the decrees of the Guardians."
+
+    # Connection State
+    connected:
+        text: "Already embodied :"
+        button: "Dispel the spirit"

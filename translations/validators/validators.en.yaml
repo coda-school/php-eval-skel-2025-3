@@ -1,0 +1,14 @@
+form:
+    username:
+        not_blank: "The Eponym cannot remain in the shadows."
+        min_length: "The Eponym must be at least {{ limit }} characters."
+        max_length: "The Eponym must be at most {{ limit }} characters."
+    email:
+        not_blank: "The E-Hoot is required for the oath."
+        invalid: "The address is not a valid E-Hoot."
+    password:
+        not_blank: "The Secret Seal is mandatory."
+        min_length: "The Seal must contain at least {{ limit }} characters."
+        regex_error: "The Seal does not meet safety criteria."
+    terms:
+        is_true: "You must accept the ritual to proceed."

@@ -5,57 +5,68 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\TextType; // <--- AJOUT IMPORTANT
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Email;
 
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email')
             ->add('username', TextType::class, [
-                'label' => 'Nom d\'utilisateur',
+                'attr' => [
+                    'placeholder' => 'security.fields.username',
+                ],
+                'translation_domain' => 'stela',
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a username',
-                    ]),
+                    new NotBlank(['message' => 'form.username.not_blank']),
                     new Length([
                         'min' => 3,
-                        'minMessage' => 'Your username should be at least {{ limit }} characters',
-                        'max' => 50,
+                        'max' => 20,
+                        'minMessage' => 'form.username.min_length',
+                        'maxMessage' => 'form.username.max_length'
                     ]),
                 ],
             ])
-            // --- FIN AJOUT ---
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
+            ->add('email', EmailType::class, [
+                'attr' => [
+                    'placeholder' => 'security.fields.email_placeholder',
+                ],
+                'translation_domain' => 'stela',
                 'constraints' => [
-                    new IsTrue([
-                        'message' => 'You should agree to our terms.',
-                    ]),
+                    new NotBlank(['message' => 'form.email.not_blank']),
+                    new Email(['message' => 'form.email.invalid']),
                 ],
             ])
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
+                    new NotBlank(['message' => 'form.password.not_blank']),
                     new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
+                        'min' => 8,
+                        'minMessage' => 'form.password.min_length',
                         'max' => 4096,
                     ]),
+                    new Regex([
+                        'pattern' => '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/',
+                        'message' => 'form.password.regex_error',
+                    ])
                 ],
             ])
-        ;
+            ->add('agreeTerms', CheckboxType::class, [
+                'mapped' => false,
+                'constraints' => [
+                    new IsTrue(['message' => 'form.terms.is_true']),
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

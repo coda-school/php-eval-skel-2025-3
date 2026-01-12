@@ -1,0 +1,492 @@
+/* ============================================================================
+   1. CONFIGURATION SYSTEME & CORRECTIFS NAVIGATEURS
+   Assure une expérience stable sur Safari/iOS et gère l'autofill.
+   ============================================================================ */
+
+html {
+    background-color: #0c0a09 !important;
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: #0c0a09 !important;
+    overflow-y: auto;
+    height: 100vh;
+    -webkit-overflow-scrolling: touch;
+    color: #e7e5e4;
+    font-family: serif;
+}
+
+/* Correction drastique Autofill Safari (évite le fond blanc/bleu) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #0c0a09 inset !important;
+    -webkit-text-fill-color: #e7e5e4 !important;
+    transition: background-color 600000s ease-in-out 0s !important;
+    caret-color: #c5a059 !important;
+}
+
+/* Supprime les bordures de focus natives */
+input:focus {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Fix Safari : prévient les sauts de layout pendant les animations */
+.safari-fix {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+}
+
+
+/* ============================================================================
+   2. IDENTITÉ VISUELLE STELA (STRUCTURE & TEXTURES)
+   Définit l'aspect "Dalle de pierre" du formulaire.
+   ============================================================================ */
+
+.stela-bg {
+    background-color: #0c0a09;
+    background-image: conic-gradient(from 180deg at 50% 0%, rgba(197, 160, 89, 0.08) 0deg, rgba(12, 10, 9, 1) 140deg, rgba(12, 10, 9, 1) 220deg, rgba(197, 160, 89, 0.08) 360deg);
+}
+
+.stela-slab {
+    background-color: #1c1917;
+    border: 1px solid #292524;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.8);
+    position: relative;
+    width: 100%;
+    max-width: 32rem;
+}
+
+.stela-texture {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 0;
+}
+
+.font-cinzel {
+    font-family: 'Cinzel', serif;
+}
+
+
+/* ============================================================================
+   3. CHAMPS DE SAISIE (INPUTS & LABELS)
+   Style "Groove" : donne l'impression que les champs sont gravés dans la pierre.
+   ============================================================================ */
+
+.stela-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.stela-label {
+    display: block;
+    font-size: 10px;
+    color: #78716c;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.5rem;
+    padding-left: 0.25rem;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.stela-group:focus-within .stela-label {
+    color: #c5a059;
+}
+
+.stela-input-groove {
+    position: relative;
+    background-color: #0c0a09;
+    box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.7);
+    border-bottom: 1px solid #292524;
+    transition: all 0.4s ease;
+}
+
+.stela-input {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #e7e5e4;
+    font-family: serif;
+    font-size: 1.125rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    outline: none;
+}
+
+.stela-input::placeholder {
+    color: #44403c;
+    letter-spacing: normal;
+}
+
+/* On s'assure que le placeholder du password ne subit pas d'espacement étrange */
+.stela-input-password::placeholder {
+    letter-spacing: normal;
+}
+
+/* Barre de validation (Soulignement Or/Rouge) */
+.stela-bar {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 1px;
+    width: 100%;
+    transition: all 0.5s ease;
+    opacity: 0;
+}
+
+.stela-bar.valid {
+    background-color: #c5a059;
+    box-shadow: 0 0 10px #c5a059;
+    opacity: 1;
+}
+
+.stela-bar.invalid {
+    background-color: #ef4444;
+    box-shadow: 0 0 10px #ef4444;
+    opacity: 1;
+}
+
+
+/* ============================================================================
+   4. BOUTON D'ACTION PRINCIPAL
+   Restaure l'effet original avec profondeur et lignes animées (In-only).
+   ============================================================================ */
+
+.stela-btn-original {
+    position: relative;
+    width: 100%;
+    height: 3.5rem;
+    margin-top: 1.5rem;
+    background-color: #141210;
+    overflow: hidden;
+    border: 1px solid #2a2826;
+    transition: all 0.7s ease;
+    cursor: pointer;
+    display: block;
+}
+
+/* Ombre interne pour l'effet de cadre creusé */
+.stela-btn-shadow {
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 1);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Lignes dorées horizontales */
+.stela-btn-line {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c5a059, transparent);
+    transition: none; /* Pas de transition out */
+    z-index: 2;
+}
+
+.stela-btn-line.top { top: 0; left: 0; transform: translateX(-100%); }
+.stela-btn-line.bottom { bottom: 0; right: 0; transform: translateX(100%); }
+
+/* Déclenchement de l'animation au Hover */
+.stela-btn-original:hover { border-color: rgba(197, 160, 89, 0.5); }
+.stela-btn-original:hover .stela-btn-line { transition: transform 1.5s ease-in-out; }
+.stela-btn-original:hover .stela-btn-line.top { transform: translateX(100%); }
+.stela-btn-original:hover .stela-btn-line.bottom { transform: translateX(-100%); }
+
+.stela-btn-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 1rem;
+}
+
+.stela-btn-text {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 0.875rem;
+    color: #57534e;
+    transition: color 0.3s;
+    font-family: 'Cinzel', serif;
+}
+
+.stela-btn-original:hover .stela-btn-text { color: #fffcf5; }
+
+.stela-btn-decor {
+    color: #c5a059;
+    opacity: 0.2;
+    font-size: 0.75rem;
+    transition: opacity 0.3s;
+}
+
+.stela-btn-original:hover .stela-btn-decor { opacity: 1; }
+
+/* Lueur et effet de clic */
+.stela-btn-glow {
+    position: absolute;
+    inset: 0;
+    background-color: #c5a059;
+    opacity: 0;
+    transition: opacity 0.7s;
+    pointer-events: none;
+}
+
+.stela-btn-original:hover .stela-btn-glow { opacity: 0.05; }
+
+.stela-btn-click {
+    position: absolute;
+    inset: 0;
+    background-color: black;
+    opacity: 0;
+    transition: opacity 0.1s;
+}
+
+.stela-btn-original:active .stela-btn-click { opacity: 0.4; }
+
+
+/* ============================================================================
+   5. ERREURS & FAILLES MYSTIQUES
+   Style visuel pour les erreurs de validation.
+   ============================================================================ */
+
+.stela-errors-wrapper {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+    position: relative;
+}
+
+.stela-error-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.stela-error-item {
+    font-size: 9px;
+    color: rgba(239, 68, 68, 0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: bold;
+    display: flex;
+    align-items: start;
+    gap: 0.5rem;
+    line-height: 1.1;
+    padding-left: 0.25rem;
+}
+
+.stela-error-bullet {
+    color: #c5a059;
+    margin-top: 1px;
+}
+
+/* Alerte Globale (Utilisée pour les identifiants invalides sur Login) */
+.stela-alert-error {
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    background-color: rgba(69, 10, 10, 0.4);
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: shake 0.4s ease-in-out;
+}
+
+.stela-alert-text {
+    color: #fca5a5;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.stela-shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+
+/* ============================================================================
+   6. WIDGETS & COMPOSANTS SPECIFIQUES
+   Checkbox rituelle, Jauge de force et Liens de navigation.
+   ============================================================================ */
+
+/* Checkbox Rituelle (Losange) */
+.stela-check-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-top: 0.5rem;
+}
+
+.stela-checkbox {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 1px solid #44403c;
+    background-color: #0c0a09;
+    transform: rotate(45deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+/* État invalide de la Checkbox (Rouge) */
+.stela-checkbox.invalid {
+    border-color: #ef4444;
+}
+
+.stela-check-container:hover .stela-checkbox {
+    border-color: #c5a059;
+}
+
+.stela-checkmark {
+    width: 0.625rem;
+    height: 0.625rem;
+    background-color: #c5a059;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0 0 5px #c5a059;
+}
+
+/* Jauge de force du mot de passe */
+.strength-meter {
+    height: 2px;
+    background-color: #0c0a09;
+    width: 100%;
+    margin-top: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0;
+    background-color: #ef4444;
+    transition: width 0.4s ease, background-color 0.4s ease;
+    box-shadow: 0 0 10px currentColor;
+}
+
+/* Badges de critères (8 car., majuscule, etc.) */
+.badge {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #57534e;
+    transition: all 0.5s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge.valid {
+    color: #c5a059;
+    text-shadow: 0 0 5px rgba(197, 160, 89, 0.3);
+}
+
+.badge::before { content: '✗'; font-size: 10px; opacity: 0.5; }
+.badge.valid::before { content: '✓'; font-weight: 900; opacity: 1; }
+
+/* Bouton Oeil (Show/Hide Password) */
+#toggle-password {
+    color: #44403c;
+    transition: color 0.3s ease;
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.25rem;
+    cursor: pointer;
+    z-index: 20;
+}
+
+#toggle-password:hover { color: #c5a059; }
+
+/* Liens de navigation (S'incarner / Prêter serment) */
+.stela-link-container {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    position: relative;
+    text-align: center;
+}
+
+.stela-link-line {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 75%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(197, 160, 89, 0.3), transparent);
+}
+
+.stela-link {
+    display: inline-flex;
+    align-items: center;
+    color: #c5a059;
+    padding: 0.5rem 0;
+    transition: color 0.3s;
+}
+
+.stela-link:hover { color: #fffcf5; }
+
+.stela-link-text {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    position: relative;
+    font-family: 'Cinzel', serif;
+}
+
+.stela-link-arrow {
+    opacity: 0;
+    transition: all 0.5s ease;
+    font-size: 10px;
+    padding: 0 0.5rem;
+}
+
+/* Animations des flèches au survol */
+.stela-link:hover .left { opacity: 1; transform: translateX(0); }
+.stela-link:hover .right { opacity: 1; transform: translateX(0); }
+.stela-link .left { transform: translateX(-0.5rem); }
+.stela-link .right { transform: translateX(0.5rem); }
+
+.stela-link-underline {
+    position: absolute;
+    bottom: -0.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 1px;
+    width: 0;
+    background: linear-gradient(90deg, transparent, #c5a059, transparent);
+    transition: all 0.5s;
+    opacity: 0;
+}
+
+.stela-link:hover .stela-link-underline {
+    width: 100%;
+    opacity: 1;
+}

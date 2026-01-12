@@ -13,19 +13,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted("ROLE_USER")]
 final class FollowController extends AbstractController
 {
-    #[Route('/{_locale}/user/{id}/follow', name: 'app_user_follow', requirements: ['_locale' => 'en|fr'])]
-    #[Route('/user/{id}/follow', name: 'app_user_follow_redirect', methods: ['POST'])]
+    #[Route('/{_locale}/user/{userToFollow}/follow', name: 'app_user_follow', requirements: ['_locale' => 'en|fr'], methods: ['POST', 'GET'])]
+    #[Route('/user/{userToFollow}/follow', name: 'app_user_follow_redirect', methods: ['POST'])]
     public function follow(
         User $userToFollow,
         EntityManagerInterface $entityManager,
         Request $request,
+        string $_locale = 'fr'
     ): Response
     {
         /** @var User $currentUser */
         $currentUser = $this->getUser();
 
+        // On ne peut pas se suivre soi-même
         if($currentUser->getId() === $userToFollow->getId()) {
-            return $this->redirect($request->headers->get('referer') ?? '/');
+            return $this->redirectToProfile($userToFollow, $_locale);
         }
 
         if($currentUser->getFollowing()->contains($userToFollow)){
@@ -34,9 +36,16 @@ final class FollowController extends AbstractController
             $currentUser->addFollowing($userToFollow);
         }
 
-        //Sauvegarder
         $entityManager->flush();
 
-        return $this->redirect($request->headers->get('referer') ?? '/');
+        return $this->redirectToProfile($userToFollow, $_locale);
+    }
+
+    private function redirectToProfile(User $user, string $locale): Response
+    {
+        return $this->redirectToRoute('app_user_show', [
+            'id' => $user->getId(),
+            '_locale' => $locale
+        ]);
     }
 }

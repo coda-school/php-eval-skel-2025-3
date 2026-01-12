@@ -43,7 +43,7 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                     </h1>
                     <div class="h-[1px] w-32 bg-gradient-to-r from-transparent via-[#c5a059]/70 to-transparent mx-auto"></div>
                     <p class="text-[#8c7b6c] text-xs uppercase tracking-[0.2em] pt-2 font-bold">
-                        {{ 'security.subtitle'|trans({}, 'stela') }}
+                        {{ 'stela.subtitle'|trans({}, 'stela') }}
                     </p>
                 </div>
 
@@ -55,7 +55,7 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                 =========================
                 #}
                 <div class="stela-group group">
-                    <label for="{{ registrationForm.username.vars.id }}" class="stela-label">{{ 'security.fields.username'|trans({}, 'stela') }}</label>
+                    <label for="{{ registrationForm.username.vars.id }}" class="stela-label">{{ 'stela.fields.username'|trans({}, 'stela') }}</label>
                     <div class="stela-input-groove">
                         <span class="absolute left-3 top-3 text-[#57534e] select-none font-serif text-xl">@</span>
                         {{ form_widget(registrationForm.username, { 'attr': { 'class': 'stela-input pl-9' } }) }}
@@ -70,7 +70,7 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                 =========================
                 #}
                 <div class="stela-group group">
-                    <label for="{{ registrationForm.email.vars.id }}" class="stela-label">{{ 'security.fields.email'|trans({}, 'stela') }}</label>
+                    <label for="{{ registrationForm.email.vars.id }}" class="stela-label">{{ 'stela.fields.email'|trans({}, 'stela') }}</label>
                     <div class="stela-input-groove">
                         {{ form_widget(registrationForm.email, { 'attr': { 'class': 'stela-input' } }) }}
                         <span id="bar-email" class="stela-bar"></span>
@@ -84,7 +84,7 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                 =========================
                 #}
                 <div class="stela-group group">
-                    <label for="{{ registrationForm.plainPassword.vars.id }}" class="stela-label">{{ 'security.fields.password'|trans({}, 'stela') }}</label>
+                    <label for="{{ registrationForm.plainPassword.vars.id }}" class="stela-label">{{ 'stela.fields.password'|trans({}, 'stela') }}</label>
                     <div class="stela-input-groove">
                         {# Note: 'is-hidden-dots' applique l'espacement large pour les points #}
                         {{ form_widget(registrationForm.plainPassword, { 'attr': { 'class': 'stela-input pr-12 stela-input-password is-hidden-dots', 'placeholder': '••••••••••••' }}) }}
@@ -105,11 +105,11 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
 
                     {# Critères de validation #}
                     <div id="password-criteria" class="flex flex-wrap gap-x-4 gap-y-2 mt-3 pl-1">
-                        <span class="badge" data-requirement="length">{{ 'security.checklist.check1'|trans({}, 'stela') }}</span>
-                        <span class="badge" data-requirement="lowercase">{{ 'security.checklist.check2'|trans({}, 'stela') }}</span>
-                        <span class="badge" data-requirement="uppercase">{{ 'security.checklist.check3'|trans({}, 'stela') }}</span>
-                        <span class="badge" data-requirement="number">{{ 'security.checklist.check4'|trans({}, 'stela') }}</span>
-                        <span class="badge" data-requirement="special">{{ 'security.checklist.check5'|trans({}, 'stela') }}</span>
+                        <span class="badge" data-requirement="length">{{ 'stela.checklist.check1'|trans({}, 'stela') }}</span>
+                        <span class="badge" data-requirement="lowercase">{{ 'stela.checklist.check2'|trans({}, 'stela') }}</span>
+                        <span class="badge" data-requirement="uppercase">{{ 'stela.checklist.check3'|trans({}, 'stela') }}</span>
+                        <span class="badge" data-requirement="number">{{ 'stela.checklist.check4'|trans({}, 'stela') }}</span>
+                        <span class="badge" data-requirement="special">{{ 'stela.checklist.check5'|trans({}, 'stela') }}</span>
                     </div>
                 </div>
 
@@ -128,8 +128,8 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                         </div>
 
                         <div class="ml-6 text-sm text-[#78716c] leading-tight group-hover:text-[#a8a29e]">
-                            <span class="block text-[10px] uppercase tracking-widest text-[#c5a059]/70 font-bold mb-1">{{ 'security.terms.title'|trans({}, 'stela') }}</span>
-                            {{ 'security.terms.text'|trans({}, 'stela') }}
+                            <span class="block text-[10px] uppercase tracking-widest text-[#c5a059]/70 font-bold mb-1">{{ 'stela.terms.title'|trans({}, 'stela') }}</span>
+                            {{ 'stela.terms.text'|trans({}, 'stela') }}
                         </div>
                     </label>
                     {{ form_errors(registrationForm.agreeTerms) }}
@@ -141,7 +141,7 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                     <span class="stela-btn-shadow"></span>
                     <span class="stela-btn-content">
                         <span class="stela-btn-decor">- ⌬ -</span>
-                        <span class="stela-btn-text">{{ 'security.buttons.register'|trans({}, 'stela') }}</span>
+                        <span class="stela-btn-text">{{ 'stela.buttons.register'|trans({}, 'stela') }}</span>
                         <span class="stela-btn-decor">- ⌬ -</span>
                     </span>
                     <span class="stela-btn-glow"></span>
@@ -154,11 +154,11 @@ Surcharge locale pour afficher les erreurs sous forme de liste stylisée
                 {# Pied de page : Lien Login #}
                 <div class="stela-link-container">
                     <div class="stela-link-line"></div>
-                    <p class="text-[#78716c] text-[10px] uppercase tracking-[0.25em] mb-4 font-bold mt-4">{{ 'security.links.already_member'|trans({}, 'stela') }}</p>
+                    <p class="text-[#78716c] text-[10px] uppercase tracking-[0.25em] mb-4 font-bold mt-4">{{ 'stela.links.already_member'|trans({}, 'stela') }}</p>
                     <a href="{{ path('app_login', {'_locale': app.request.locale}) }}" class="stela-link group">
                         <span class="stela-link-arrow left">►</span>
                         <span class="stela-link-text">
-                            {{ 'security.buttons.login'|trans({}, 'stela') }}
+                            {{ 'stela.buttons.login'|trans({}, 'stela') }}
                             <span class="stela-link-underline"></span>
                         </span>
                         <span class="stela-link-arrow right">◄</span>

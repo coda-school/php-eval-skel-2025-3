@@ -23,7 +23,7 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('username', TextType::class, [
                 'attr' => [
-                    'placeholder' => 'security.fields.username',
+                    'placeholder' => 'stela.fields.username',
                 ],
                 'translation_domain' => 'stela',
                 'constraints' => [
@@ -38,7 +38,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'attr' => [
-                    'placeholder' => 'security.fields.email_placeholder',
+                    'placeholder' => 'stela.fields.email_placeholder',
                 ],
                 'translation_domain' => 'stela',
                 'constraints' => [

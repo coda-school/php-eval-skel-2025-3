@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Tweet;
 use App\Entity\User;
+use App\Entity\UserSettings;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -15,7 +16,9 @@ class AppFixtures extends Fixture
     // On récupère le hasher pour le Cryptage du mot de passe
     public function __construct(
         private readonly UserPasswordHasherInterface $hasher
-    ) {}
+    )
+    {
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -25,7 +28,7 @@ class AppFixtures extends Fixture
         // Tableau pour stocker nos users et créer des liens entre eux après
         $users = [];
 
-        // création d'un User "Admin" pour tester facilement
+        // --- ADMIN USER ---
         $admin = new User();
         $admin->setEmail('admin@stela.com')
             ->setUsername('Batman')
@@ -39,7 +42,18 @@ class AppFixtures extends Fixture
         $manager->persist($admin);
         $users[] = $admin;
 
-        // Création de 20 utilisateurs normaux
+        // -> SETTINGS POUR L'ADMIN (Toujours Dark Mode pour Batman !)
+        $adminSettings = new UserSettings();
+        $adminSettings->setOwner($admin)
+            ->setTheme('dark')
+            ->setLanguage('fr')
+            ->setNotificationsEnabled(true)
+            ->setIsPrivateAccount(false);
+
+        $manager->persist($adminSettings);
+
+
+        // --- UTILISATEURS NORMAUX ---
         for ($i = 0; $i < 20; $i++) {
             $user = new User();
             $user->setEmail($faker->email())
@@ -54,17 +68,27 @@ class AppFixtures extends Fixture
 
             $manager->persist($user);
             $users[] = $user;
+
+            // -> SETTINGS POUR L'UTILISATEUR COURANT
+            $settings = new UserSettings();
+            $settings->setOwner($user) // Obligatoire (OneToOne JoinColumn nullable=false)
+            ->setTheme($faker->randomElement(['light', 'dark']))
+                ->setLanguage($faker->randomElement(['fr', 'en', 'es']))
+                ->setNotificationsEnabled($faker->boolean(80)) // 80% activent les notifs
+                ->setIsPrivateAccount($faker->boolean(15));  // 15% de comptes privés
+
+            $manager->persist($settings);
         }
 
-        // Création des Stelas (Tweets) et des Abonnements (Follows)
+        // --- TWEETS & FOLLOWS ---
         foreach ($users as $user) {
 
             // A. Chaque user poste entre 0 et 5 tweets
             for ($j = 0; $j < mt_rand(0, 5); $j++) {
                 $tweet = new Tweet();
-                $tweet->setContent($faker->realText(140)) // Contenu style Twitter
-                ->setCreatedDate($faker->dateTimeBetween('-6 months')) // Date aléatoire
-                ->setAuthor($user);
+                $tweet->setContent($faker->realText(140))
+                    ->setCreatedDate($faker->dateTimeBetween('-6 months'))
+                    ->setAuthor($user);
 
                 $manager->persist($tweet);
             }
@@ -73,8 +97,9 @@ class AppFixtures extends Fixture
             // On prend 3 à 5 utilisateurs au hasard dans la liste et on les suit
             $randomUsersToFollow = $faker->randomElements($users, mt_rand(3, 5));
 
+
+            // On ne se suit pas soi-même
             foreach ($randomUsersToFollow as $userToFollow) {
-                // On ne se suit pas soi-même
                 if ($user !== $userToFollow) {
                     $user->addFollowing($userToFollow);
                 }

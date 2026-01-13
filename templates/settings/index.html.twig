@@ -1,20 +1,211 @@
-{% extends 'base.html.twig' %}
+{% extends '_layouts/in_app.html.twig' %}
 
-{% block title %}Hello SettingsController!{% endblock %}
+{% block title %}Settings{% endblock %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% block content %}
+    {# Conteneur principal #}
+    <div class="min-h-screen stela-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        {# La Dalle #}
+        <div class="stela-slab p-8 sm:p-12 relative overflow-hidden">
+            <div class="stela-texture"></div>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/app/src/Controller/SettingsController.php</code></li>
-        <li>Your template at <code>/app/templates/settings/index.html.twig</code></li>
-    </ul>
-</div>
+            {# En-tête #}
+            <div class="relative z-10 mb-10 text-center">
+                <h1 class="text-3xl font-cinzel text-[#e7e5e4] tracking-widest font-bold mb-2">
+                    Paramètres
+                </h1>
+                <p class="text-[#78716c] text-xs uppercase tracking-[0.2em]">
+                    Configurez votre incarnation
+                </p>
+            </div>
+
+            {# Messages Flash #}
+            {% for message in app.flashes('success') %}
+                <div class="stela-alert-error mb-8"
+                     style="border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1);">
+                    <span class="text-[#c5a059] text-xl">✦</span>
+                    <span class="stela-alert-text" style="color: #c5a059;">{{ message }}</span>
+                </div>
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'class': 'relative z-10 space-y-8', 'id': 'settings-form'}}) }}
+
+            {# --- SECTION 1 : AVATAR & IDENTITÉ --- #}
+            <div class="text-center mb-8">
+                <div class="relative inline-block group">
+                    <div
+                        class="h-24 w-24 rounded-full p-1 border border-[#292524] bg-[#0c0a09] shadow-2xl mx-auto overflow-hidden relative">
+                        {% if app.user and app.user.avatar %}
+                            <img
+                                class="h-full w-full rounded-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
+                                src="{{ asset(app.user.avatar) }}" alt="">
+                        {% else %}
+                            <div
+                                class="h-full w-full rounded-full bg-[#1c1917] flex items-center justify-center text-[#44403c]">
+                                <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                </svg>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {# Bouton d'upload #}
+                    <label for="{{ form.avatarFile.vars.id }}" class="mt-4 inline-block cursor-pointer">
+                            <span
+                                class="stela-link-text text-[10px] text-[#78716c] hover:text-[#c5a059] transition-colors border-b border-[#292524] hover:border-[#c5a059] pb-1">
+                                Modifier le portrait
+                            </span>
+                        {{ form_widget(form.avatarFile, {'attr': {'class': 'hidden'}}) }}
+                    </label>
+                    <div class="stela-errors-wrapper text-center">
+                        {{ form_errors(form.avatarFile) }}
+                    </div>
+                </div>
+            </div>
+
+            {# --- CHAMPS TEXTE --- #}
+            <div class="space-y-6">
+
+                {# Username #}
+                <div class="stela-group">
+                    {{ form_label(form.username, null, {'label_attr': {'class': 'stela-label'}}) }}
+                    <div class="stela-input-groove">
+                        {{ form_widget(form.username, {'attr': {'class': 'stela-input', 'placeholder': 'Votre éponyme...'}}) }}
+                        <div class="stela-bar"></div>
+                    </div>
+                    <div class="stela-errors-wrapper">
+                        {{ form_errors(form.username) }}
+                    </div>
+                </div>
+
+                {# Bio #}
+                <div class="stela-group">
+                    {{ form_label(form.bio, null, {'label_attr': {'class': 'stela-label'}}) }}
+                    <div class="stela-input-groove">
+                        {{ form_widget(form.bio, {'attr': {'class': 'stela-input', 'rows': 3, 'placeholder': 'Racontez votre légende...'}}) }}
+                        <div class="stela-bar"></div>
+                    </div>
+                    <div class="stela-errors-wrapper">
+                        {{ form_errors(form.bio) }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full h-px bg-gradient-to-r from-transparent via-[#292524] to-transparent my-8"></div>
+
+            {# --- PREFERENCES --- #}
+            <div class="space-y-6">
+                <h3 class="font-cinzel text-[#78716c] text-center text-sm tracking-widest mb-6">Préférences</h3>
+
+                <div class="grid grid-cols-2 gap-4">
+                    {# Theme #}
+                    <div class="stela-group">
+                        {{ form_label(form.theme, null, {'label_attr': {'class': 'stela-label'}}) }}
+                        <div class="stela-input-groove">
+                            {{ form_widget(form.theme, {'attr': {'class': 'stela-input'}}) }}
+                            <div class="stela-bar"></div>
+                        </div>
+                    </div>
+
+                    {# Langue #}
+                    <div class="stela-group">
+                        {{ form_label(form.language, null, {'label_attr': {'class': 'stela-label'}}) }}
+                        <div class="stela-input-groove">
+                            {{ form_widget(form.language, {'attr': {'class': 'stela-input'}}) }}
+                            <div class="stela-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Checkboxes #}
+                <div class="space-y-4 pt-2">
+                    {# Notifications #}
+                    <label class="stela-check-container group">
+                        {{ form_widget(form.notificationsEnabled, {'attr': {'class': 'hidden peer'}}) }}
+
+                        <div class="stela-checkbox peer-checked:border-[#c5a059] group-hover:border-[#c5a059]">
+                            <div class="stela-checkmark peer-checked:opacity-100"></div>
+                        </div>
+                        <span class="ml-4 stela-label !mb-0 cursor-pointer group-hover:text-[#c5a059]">
+                                Recevoir les missives (Notifs)
+                            </span>
+                    </label>
+
+                    {# Private Account #}
+                    <label class="stela-check-container group">
+                        {{ form_widget(form.isPrivateAccount, {'attr': {'class': 'hidden peer'}}) }}
+
+                        <div class="stela-checkbox peer-checked:border-[#c5a059] group-hover:border-[#c5a059]">
+                            <div class="stela-checkmark peer-checked:opacity-100"></div>
+                        </div>
+                        <span class="ml-4 stela-label !mb-0 cursor-pointer group-hover:text-[#c5a059]">
+                                Compte Hermétique (Privé)
+                            </span>
+                    </label>
+                </div>
+            </div>
+
+            {# --- Bouton Action --- #}
+            <div class="pt-6">
+                <button type="submit" class="stela-btn-original group">
+                    <div class="stela-btn-shadow"></div>
+                    <div class="stela-btn-line top"></div>
+                    <div class="stela-btn-line bottom"></div>
+                    <div class="stela-btn-content">
+                        <span class="stela-btn-text">Graver les changements</span>
+                        <span class="stela-btn-decor">✦</span>
+                    </div>
+                    <div class="stela-btn-glow"></div>
+                    <div class="stela-btn-click"></div>
+                </button>
+
+                <div class="stela-link-container">
+                    <a href="{{ path('app_home') }}" class="stela-link">
+                        <span class="stela-link-arrow left">←</span>
+                        <span class="stela-link-text">Retour au sanctuaire</span>
+                        <div class="stela-link-underline"></div>
+                    </a>
+                </div>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    {# Script qui gère l'animation et les checkboxs #}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.stela-input');
+            inputs.forEach(input => {
+                const bar = input.nextElementSibling;
+
+                input.addEventListener('focus', () => {
+                    if (bar) bar.classList.add('valid');
+                });
+
+                input.addEventListener('blur', () => {
+                    if (bar) bar.classList.remove('valid');
+                });
+            });
+
+
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(chk => {
+                const updateCheck = () => {
+                    const visualMark = chk.nextElementSibling.querySelector('.stela-checkmark');
+                    if (visualMark) {
+                        visualMark.style.opacity = chk.checked ? '1' : '0';
+                    }
+                    const visualBox = chk.nextElementSibling;
+                    if (visualBox) {
+                        visualBox.style.borderColor = chk.checked ? '#c5a059' : '';
+                    }
+                };
+                chk.addEventListener('change', updateCheck);
+                updateCheck();
+            });
+        });
+    </script>
 {% endblock %}

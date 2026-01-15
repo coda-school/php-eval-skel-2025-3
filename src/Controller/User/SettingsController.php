@@ -14,7 +14,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class SettingsController extends AbstractController
 {
-    #[Route('/{_locale}/settings', name: 'app_settings', requirements: ['_locale' => 'en|fr'])]
+    #[Route('/{_locale}/settings', name: 'app_user_settings', requirements: ['_locale' => 'en|fr'], methods: ['POST', 'GET'])]
+    #[Route('/settings', name: 'app_user_settings_redirect', methods: ['POST', 'GET'])]
     public function index(
         Request                $request,
         UserSettingsRepository $settingsRepo,
@@ -46,7 +47,7 @@ final class SettingsController extends AbstractController
 
             $this->addFlash('success', 'Vos paramètres ont été mis à jour avec succès !');
 
-            return $this->redirectToRoute('app_settings', ['_locale' => $request->getLocale()]);
+            return $this->redirectToRoute('app_user_settings', ['_locale' => $request->getLocale()]);
         }
 
         return $this->render('settings/index.html.twig', [

@@ -9,7 +9,7 @@
 (création d'un groupe discord pour pouvoir communiquer)
 - Ésprit d'entraide : lorsqu'un membre rencontrait une difficulté, les autres membres étaient toujours disponibles pour aider.
   (via discord ou directement à coda).
-- Motivation et implication constatantes tout au long du projet.
+- Motivation et implication constantes tout au long du projet.
 - Respect global des délais fixés.
 
 

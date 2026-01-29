@@ -1,172 +1,221 @@
 {% extends '_layouts/in_app.html.twig' %}
 
-{% block title %}Settings{% endblock %}
+{#
+============================================================================
+CONFIGURATION DE LA PAGE
+- hide_sidebar_right : Active le layout 2 colonnes (via in_app.html.twig)
+============================================================================
+#}
+{% set hide_sidebar_right = true %}
+
+{% block title %}{{ 'settings.title'|trans({}, 'stela') }} - STELA{% endblock %}
+
+{#
+============================================================================
+1. STYLES SPÉCIFIQUES
+Bloque le redimensionnement manuel de la bio pour préserver le design.
+============================================================================
+#}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        textarea.stela-input { resize: none; }
+    </style>
+{% endblock %}
+
+{#
+============================================================================
+2. THÈME DU FORMULAIRE & ERREURS GLOBALES
+============================================================================
+#}
+{% form_theme form _self %}
+
+{% block form_errors %}
+    {% if errors|length > 0 %}
+        <div class="stela-errors-wrapper mt-2">
+            <div class="flex flex-col gap-1">
+                {% for error in errors %}
+                    <div class="flex items-start gap-2 text-[#ef4444] text-[10px] font-bold uppercase tracking-widest animate-pulse">
+                        <span class="text-[#c5a059]">✦</span>
+                        <span>{{ error.message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-    {# Conteneur principal #}
-    <div class="min-h-screen stela-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen stela-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 w-full">
 
-        {# La Dalle #}
-        <div class="stela-slab p-8 sm:p-12 relative overflow-hidden">
+        {# Conteneur Principal (Largeur augmentée pour le mode Paysage) #}
+        <div class="stela-slab p-8 sm:p-12 relative overflow-hidden w-full max-w-4xl mx-auto">
             <div class="stela-texture"></div>
 
-            {# En-tête #}
-            <div class="relative z-10 mb-10 text-center">
+            {#
+            ============================================================================
+            3. EN-TÊTE DU GRIMOIRE
+            Titre et Sous-titre
+            ============================================================================
+            #}
+            <div class="relative z-10 mb-10 text-center border-b border-[#292524] pb-6">
                 <h1 class="text-3xl font-cinzel text-[#e7e5e4] tracking-widest font-bold mb-2">
-                    Paramètres
+                    {{ 'settings.title'|trans({}, 'stela') }}
                 </h1>
                 <p class="text-[#78716c] text-xs uppercase tracking-[0.2em]">
-                    Configurez votre incarnation
+                    {{ 'settings.subtitle'|trans({}, 'stela') }}
                 </p>
             </div>
 
-            {# Messages Flash #}
-            {% for message in app.flashes('success') %}
-                <div class="stela-alert-error mb-8"
-                     style="border-color: #c5a059; background-color: rgba(197, 160, 89, 0.1);">
-                    <span class="text-[#c5a059] text-xl">✦</span>
-                    <span class="stela-alert-text" style="color: #c5a059;">{{ message }}</span>
-                </div>
-            {% endfor %}
+            {{ form_start(form, {'attr': {'class': 'relative z-10', 'id': 'settings-form'}}) }}
 
-            {{ form_start(form, {'attr': {'class': 'relative z-10 space-y-8', 'id': 'settings-form'}}) }}
+            {#
+            ============================================================================
+            4. GRILLE DU FORMULAIRE (2 COLONNES)
+            ============================================================================
+            #}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 relative">
 
-            {# --- SECTION 1 : AVATAR & IDENTITÉ --- #}
-            <div class="text-center mb-8">
-                <div class="relative inline-block group">
-                    <div
-                        class="h-24 w-24 rounded-full p-1 border border-[#292524] bg-[#0c0a09] shadow-2xl mx-auto overflow-hidden relative">
-                        {% if app.user and app.user.avatar %}
-                            <img
-                                class="h-full w-full rounded-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                                src="{{ asset(app.user.avatar) }}" alt="">
-                        {% else %}
-                            <div
-                                class="h-full w-full rounded-full bg-[#1c1917] flex items-center justify-center text-[#44403c]">
-                                <svg class="h-10 w-10" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"/>
-                                </svg>
+                {#
+                ------------------------------------------------------------------------
+                4.1 COLONNE GAUCHE : IDENTITÉ (Avatar, Noms, Bio)
+                ------------------------------------------------------------------------
+                #}
+                <div class="space-y-8">
+
+                    {# A. Avatar #}
+                    <div class="text-center">
+                        <div class="relative inline-block group">
+                            <div class="h-24 w-24 rounded-full p-1 border border-[#292524] bg-[#0c0a09] shadow-2xl mx-auto overflow-hidden relative flex items-center justify-center">
+                                <img id="avatar-preview"
+                                     class="h-full w-full rounded-full object-cover absolute inset-0 z-20 transition-opacity duration-500 {{ app.user.avatar ? 'opacity-80 group-hover:opacity-100' : 'hidden' }}"
+                                     src="{{ app.user.avatar ? asset(app.user.avatar) : '' }}" alt="Avatar">
+                                <div id="avatar-placeholder" class="h-full w-full rounded-full bg-[#1c1917] flex items-center justify-center text-[#44403c] absolute inset-0 z-10 {{ app.user.avatar ? 'hidden' : '' }}">
+                                    <span class="font-cinzel text-2xl font-bold">{{ app.user.username|slice(0,1)|upper }}</span>
+                                </div>
                             </div>
-                        {% endif %}
-                    </div>
-
-                    {# Bouton d'upload #}
-                    <label for="{{ form.avatarFile.vars.id }}" class="mt-4 inline-block cursor-pointer">
-                            <span
-                                class="stela-link-text text-[10px] text-[#78716c] hover:text-[#c5a059] transition-colors border-b border-[#292524] hover:border-[#c5a059] pb-1">
-                                Modifier le portrait
-                            </span>
-                        {{ form_widget(form.avatarFile, {'attr': {'class': 'hidden'}}) }}
-                    </label>
-                    <div class="stela-errors-wrapper text-center">
-                        {{ form_errors(form.avatarFile) }}
-                    </div>
-                </div>
-            </div>
-
-            {# --- CHAMPS TEXTE --- #}
-            <div class="space-y-6">
-
-                {# Username #}
-                <div class="stela-group">
-                    {{ form_label(form.username, null, {'label_attr': {'class': 'stela-label'}}) }}
-                    <div class="stela-input-groove">
-                        {{ form_widget(form.username, {'attr': {'class': 'stela-input', 'placeholder': 'Votre éponyme...'}}) }}
-                        <div class="stela-bar"></div>
-                    </div>
-                    <div class="stela-errors-wrapper">
-                        {{ form_errors(form.username) }}
-                    </div>
-                </div>
-
-                {# Bio #}
-                <div class="stela-group">
-                    {{ form_label(form.bio, null, {'label_attr': {'class': 'stela-label'}}) }}
-                    <div class="stela-input-groove">
-                        {{ form_widget(form.bio, {'attr': {'class': 'stela-input', 'rows': 3, 'placeholder': 'Racontez votre légende...'}}) }}
-                        <div class="stela-bar"></div>
-                    </div>
-                    <div class="stela-errors-wrapper">
-                        {{ form_errors(form.bio) }}
-                    </div>
-                </div>
-            </div>
-
-            <div class="w-full h-px bg-gradient-to-r from-transparent via-[#292524] to-transparent my-8"></div>
-
-            {# --- PREFERENCES --- #}
-            <div class="space-y-6">
-                <h3 class="font-cinzel text-[#78716c] text-center text-sm tracking-widest mb-6">Préférences</h3>
-
-                <div class="grid grid-cols-2 gap-4">
-                    {# Theme #}
-                    <div class="stela-group">
-                        {{ form_label(form.theme, null, {'label_attr': {'class': 'stela-label'}}) }}
-                        <div class="stela-input-groove">
-                            {{ form_widget(form.theme, {'attr': {'class': 'stela-input'}}) }}
-                            <div class="stela-bar"></div>
+                            <label for="{{ form.avatarFile.vars.id }}" class="mt-4 inline-block cursor-pointer">
+                                <span class="stela-link-text text-[10px] text-[#78716c] hover:text-[#c5a059] transition-colors border-b border-[#292524] hover:border-[#c5a059] pb-1">
+                                    {{ 'fields.avatar'|trans({}, 'stela') }}
+                                </span>
+                                {{ form_widget(form.avatarFile, {'attr': {'class': 'hidden', 'onchange': 'previewAvatar(event)'}}) }}
+                            </label>
+                            <div class="text-center mt-2">{{ form_errors(form.avatarFile) }}</div>
                         </div>
                     </div>
 
-                    {# Langue #}
-                    <div class="stela-group">
-                        {{ form_label(form.language, null, {'label_attr': {'class': 'stela-label'}}) }}
-                        <div class="stela-input-groove">
-                            {{ form_widget(form.language, {'attr': {'class': 'stela-input'}}) }}
-                            <div class="stela-bar"></div>
+                    {# B. Champs Texte #}
+                    <div class="space-y-6">
+                        {# DisplayName #}
+                        <div class="stela-group">
+                            {{ form_label(form.displayName, null, {'label_attr': {'class': 'stela-label'}}) }}
+                            <div class="stela-input-groove">
+                                {{ form_widget(form.displayName, {'attr': {'class': 'stela-input', 'maxlength': '30', 'placeholder': app.user.username }, 'translation_domain': false}) }}
+                                <div class="stela-bar"></div>
+                            </div>
+                            {{ form_errors(form.displayName) }}
+                        </div>
+
+                        {# Username #}
+                        <div class="stela-group">
+                            {{ form_label(form.username, null, {'label_attr': {'class': 'stela-label'}}) }}
+                            <div class="stela-input-groove">
+                                {{ form_widget(form.username, {'attr': {'class': 'stela-input', 'maxlength': '30'}, 'translation_domain': false}) }}
+                                <div class="stela-bar"></div>
+                            </div>
+                            {{ form_errors(form.username) }}
+                        </div>
+
+                        {# Bio #}
+                        <div class="stela-group">
+                            {{ form_label(form.bio, null, {'label_attr': {'class': 'stela-label'}}) }}
+                            <div class="stela-input-groove relative">
+                                {{ form_widget(form.bio, {'attr': {'class': 'stela-input', 'rows': 5, 'maxlength': '160', 'placeholder': '...'}, 'translation_domain': false}) }}
+                                <div class="stela-bar"></div>
+                                <div id="bio-counter" class="absolute bottom-1 right-2 text-[10px] text-[#44403c] font-bold font-mono transition-colors duration-300">0/160</div>
+                            </div>
+                            {{ form_errors(form.bio) }}
                         </div>
                     </div>
                 </div>
 
-                {# Checkboxes #}
-                <div class="space-y-4 pt-2">
-                    {# Notifications #}
-                    <label class="stela-check-container group">
-                        {{ form_widget(form.notificationsEnabled, {'attr': {'class': 'hidden peer'}}) }}
+                {# SÉPARATEUR VERTICAL (Uniquement visible sur grands écrans) #}
+                <div class="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#292524] to-transparent -translate-x-1/2"></div>
 
-                        <div class="stela-checkbox peer-checked:border-[#c5a059] group-hover:border-[#c5a059]">
-                            <div class="stela-checkmark peer-checked:opacity-100"></div>
+                {#
+                ------------------------------------------------------------------------
+                4.2 COLONNE DROITE : PRÉFÉRENCES (Thème, Langue, Options)
+                ------------------------------------------------------------------------
+                #}
+                <div class="flex flex-col justify-between space-y-8">
+
+                    <div class="space-y-8">
+                        <h3 class="font-cinzel text-[#c5a059] text-left text-sm tracking-widest border-b border-[#292524] pb-2 w-fit pr-8">
+                            {{ 'settings.preferences_title'|trans({}, 'stela') }}
+                        </h3>
+
+                        {# A. Sélecteurs #}
+                        <div class="grid grid-cols-1 gap-6">
+                            <div class="stela-group">
+                                {{ form_label(form.theme, null, {'label_attr': {'class': 'stela-label'}}) }}
+                                <div class="stela-input-groove">
+                                    {{ form_widget(form.theme, {'attr': {'class': 'stela-input'}}) }}
+                                    <div class="stela-bar"></div>
+                                </div>
+                            </div>
+                            <div class="stela-group">
+                                {{ form_label(form.language, null, {'label_attr': {'class': 'stela-label'}}) }}
+                                <div class="stela-input-groove">
+                                    {{ form_widget(form.language, {'attr': {'class': 'stela-input'}}) }}
+                                    <div class="stela-bar"></div>
+                                </div>
+                            </div>
                         </div>
-                        <span class="ml-4 stela-label !mb-0 cursor-pointer group-hover:text-[#c5a059]">
-                                Recevoir les missives (Notifs)
-                            </span>
-                    </label>
 
-                    {# Private Account #}
-                    <label class="stela-check-container group">
-                        {{ form_widget(form.isPrivateAccount, {'attr': {'class': 'hidden peer'}}) }}
+                        {# B. Checkboxes Rituelles #}
+                        <div class="space-y-6 pt-2 bg-[#0c0a09]/50 p-6 rounded-lg border border-[#292524]">
+                            <label class="stela-check-container group">
+                                {{ form_widget(form.notificationsEnabled, {'attr': {'class': 'hidden peer'}}) }}
+                                <div class="stela-checkbox peer-checked:border-[#c5a059] group-hover:border-[#c5a059]">
+                                    <div class="stela-checkmark peer-checked:opacity-100"></div>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="stela-label !mb-0 cursor-pointer group-hover:text-[#c5a059] block">
+                                         {{ 'settings.notifications'|trans({}, 'stela') }}
+                                    </span>
+                                    <span class="text-[10px] text-[#57534e] block mt-1">Recevoir les alertes rituelles</span>
+                                </div>
+                            </label>
 
-                        <div class="stela-checkbox peer-checked:border-[#c5a059] group-hover:border-[#c5a059]">
-                            <div class="stela-checkmark peer-checked:opacity-100"></div>
+                            <label class="stela-check-container group">
+                                {{ form_widget(form.isPrivateAccount, {'attr': {'class': 'hidden peer'}}) }}
+                                <div class="stela-checkbox peer-checked:border-[#c5a059] group-hover:border-[#c5a059]">
+                                    <div class="stela-checkmark peer-checked:opacity-100"></div>
+                                </div>
+                                <div class="ml-4">
+                                    <span class="stela-label !mb-0 cursor-pointer group-hover:text-[#c5a059] block">
+                                        {{ 'settings.private_account'|trans({}, 'stela') }}
+                                    </span>
+                                    <span class="text-[10px] text-[#57534e] block mt-1">Seuls les initiés verront vos stèles</span>
+                                </div>
+                            </label>
                         </div>
-                        <span class="ml-4 stela-label !mb-0 cursor-pointer group-hover:text-[#c5a059]">
-                                Compte Hermétique (Privé)
-                            </span>
-                    </label>
-                </div>
-            </div>
-
-            {# --- Bouton Action --- #}
-            <div class="pt-6">
-                <button type="submit" class="stela-btn-original group">
-                    <div class="stela-btn-shadow"></div>
-                    <div class="stela-btn-line top"></div>
-                    <div class="stela-btn-line bottom"></div>
-                    <div class="stela-btn-content">
-                        <span class="stela-btn-text">Graver les changements</span>
-                        <span class="stela-btn-decor">✦</span>
                     </div>
-                    <div class="stela-btn-glow"></div>
-                    <div class="stela-btn-click"></div>
-                </button>
 
-                <div class="stela-link-container">
-                    <a href="{{ path('app_home') }}" class="stela-link">
-                        <span class="stela-link-arrow left">←</span>
-                        <span class="stela-link-text">Retour au sanctuaire</span>
-                        <div class="stela-link-underline"></div>
-                    </a>
+                    {# C. Bouton d'Action #}
+                    <div class="pt-6 mt-auto">
+                        <button type="submit" class="stela-btn-original group">
+                            <div class="stela-btn-shadow"></div>
+                            <div class="stela-btn-line top"></div>
+                            <div class="stela-btn-line bottom"></div>
+                            <div class="stela-btn-content">
+                                <span class="stela-btn-text">{{ 'buttons.save'|trans({}, 'stela') }}</span>
+                                <span class="stela-btn-decor">✦</span>
+                            </div>
+                            <div class="stela-btn-glow"></div>
+                            <div class="stela-btn-click"></div>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -174,38 +223,65 @@
         </div>
     </div>
 
-    {# Script qui gère l'animation et les checkboxs #}
+    {#
+    ============================================================================
+    5. LOGIQUE JAVASCRIPT
+    Preview Avatar, Animations inputs & Compteur de Bio
+    ============================================================================
+    #}
     <script>
+        // 5.1 Prévisualisation Avatar
+        function previewAvatar(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('avatar-preview');
+                    const placeholder = document.getElementById('avatar-placeholder');
+                    if(img) { img.src = e.target.result; img.classList.remove('hidden'); img.classList.add('opacity-100'); }
+                    if(placeholder) { placeholder.classList.add('hidden'); }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            // 5.2 Animation Barre Input (Focus/Blur)
             const inputs = document.querySelectorAll('.stela-input');
             inputs.forEach(input => {
                 const bar = input.nextElementSibling;
-
-                input.addEventListener('focus', () => {
-                    if (bar) bar.classList.add('valid');
-                });
-
-                input.addEventListener('blur', () => {
-                    if (bar) bar.classList.remove('valid');
-                });
+                input.addEventListener('focus', () => { if (bar) bar.classList.add('valid'); });
+                input.addEventListener('blur', () => { if (bar) bar.classList.remove('valid'); });
             });
 
-
+            // 5.3 Styles Checkboxes
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(chk => {
                 const updateCheck = () => {
                     const visualMark = chk.nextElementSibling.querySelector('.stela-checkmark');
-                    if (visualMark) {
-                        visualMark.style.opacity = chk.checked ? '1' : '0';
-                    }
+                    if (visualMark) visualMark.style.opacity = chk.checked ? '1' : '0';
                     const visualBox = chk.nextElementSibling;
-                    if (visualBox) {
-                        visualBox.style.borderColor = chk.checked ? '#c5a059' : '';
-                    }
+                    if (visualBox) visualBox.style.borderColor = chk.checked ? '#c5a059' : '';
                 };
                 chk.addEventListener('change', updateCheck);
                 updateCheck();
             });
+
+            // 5.4 Compteur de caractères Bio
+            const bioInput = document.getElementById('{{ form.bio.vars.id }}');
+            const bioCounter = document.getElementById('bio-counter');
+            if (bioInput && bioCounter) {
+                const maxLength = bioInput.getAttribute('maxlength') || 160;
+                const updateCounter = () => {
+                    const currentLength = bioInput.value.length;
+                    bioCounter.textContent = `${currentLength}/${maxLength}`;
+                    if (currentLength >= maxLength) { bioCounter.style.color = '#ef4444'; }
+                    else if (currentLength > (maxLength * 0.9)) { bioCounter.style.color = '#fb923c'; }
+                    else { bioCounter.style.color = '#44403c'; }
+                };
+                bioInput.addEventListener('input', updateCounter);
+                updateCounter();
+            }
         });
     </script>
 {% endblock %}

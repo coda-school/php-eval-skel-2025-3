@@ -6,4 +6,4 @@ home:
         register: "Join"
     desc:
         login: "Use your E-Hoot to access your secure session."
-        register: "Establish your Eponym and bind your destiny to the Stela."
+        register: "Establish your Eponym and bind your destiny to the "

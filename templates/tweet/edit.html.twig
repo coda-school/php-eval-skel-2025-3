@@ -1,0 +1,161 @@
+{% extends '_layouts/in_app.html.twig' %}
+
+{% block title %}{{ 'menu.sanctuary'|trans({}, 'stela') }} - STELA{% endblock %}
+
+{% block content %}
+    <div class="min-h-screen flex items-center justify-center p-4 w-full">
+        <div class="stela-slab w-full max-w-4xl relative overflow-hidden rounded-xl border border-[#292524] bg-[#1c1917] shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div class="stela-texture opacity-20 pointer-events-none"></div>
+
+            <div class="relative z-10 p-8">
+                {# Header #}
+                <div class="flex items-center justify-between border-b border-[#292524] pb-6 mb-8">
+                    <h1 class="text-2xl font-cinzel font-bold text-[#c5a059] tracking-widest flex items-center gap-3">
+                        <span>✦</span> {{ 'edit.title'|trans({}, 'stela') }}
+                    </h1>
+                    <a href="{{ path('app_home') }}" class="text-[#78716c] hover:text-[#e7e5e4] transition text-sm font-cinzel flex items-center gap-2">
+                        <span class="text-lg">×</span> {{ 'edit.close'|trans({}, 'stela') }}
+                    </a>
+                </div>
+
+                {{ form_start(form, {'attr': {'class': 'flex flex-col gap-8'}}) }}
+
+                {# --- ZONE TEXTE --- #}
+                <div class="w-full">
+                    <label class="block text-xs font-cinzel text-[#78716c] mb-2 uppercase tracking-wider pl-1">
+                        {{ 'edit.content_label'|trans({}, 'stela') }}
+                    </label>
+                    <div class="relative bg-[#0c0a09] rounded-lg border border-[#292524] focus-within:border-[#c5a059] transition duration-300 p-1 shadow-inner">
+                        {{ form_widget(form.content, {
+                            'attr': {
+                                'class': 'w-full bg-transparent p-4 text-[#e7e5e4] text-lg leading-relaxed focus:outline-none placeholder-[#44403c] resize-none font-serif min-h-[120px]',
+                                'placeholder': 'tweet.placeholder'|trans({}, 'stela')
+                            }
+                        }) }}
+                    </div>
+                    <div class="text-red-500 text-xs mt-2 font-mono pl-1">{{ form_errors(form.content) }}</div>
+                </div>
+
+                {# --- ZONE IMAGES (Grid) --- #}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    {# --- 1. IMAGE ACTUELLE (Si existe) --- #}
+                    {% if tweet.imageFilename %}
+                        <div class="flex flex-col gap-3">
+                            <label class="text-xs font-cinzel text-[#c5a059] uppercase tracking-wider pl-1">
+                                {{ 'edit.current_image'|trans({}, 'stela') }}
+                            </label>
+
+                            <div class="relative group rounded-xl overflow-hidden border border-[#44403c] bg-black/40 flex items-center justify-center min-h-[250px] p-4">
+                                <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}"
+                                     class="max-w-full max-h-[400px] w-auto h-auto object-contain">
+                            </div>
+
+                            {# CHECKBOX SIMPLE ET CLAIRE #}
+                            {% if form.deleteImage is defined %}
+                                <div class="mt-2 p-3 bg-[#0c0a09] border border-[#292524] rounded-lg flex items-center gap-3">
+                                    {{ form_widget(form.deleteImage, {
+                                        'attr': {
+                                            'class': 'w-5 h-5 rounded border-[#44403c] bg-[#1c1917] text-[#c5a059] focus:ring-[#c5a059] focus:ring-offset-0 cursor-pointer accent-[#c5a059]'
+                                        }
+                                    }) }}
+                                    <label for="{{ form.deleteImage.vars.id }}" class="text-[#e7e5e4] text-sm cursor-pointer select-none">
+                                        {{ 'edit.delete_image'|trans({}, 'stela') }}
+                                    </label>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {# --- 2. NOUVELLE IMAGE (Upload) --- #}
+                    <div class="flex flex-col gap-3 {{ tweet.imageFilename ? '' : 'col-span-2' }}">
+                        <label class="text-xs font-cinzel text-[#e7e5e4] uppercase tracking-wider pl-1">
+                            {{ tweet.imageFilename ? 'edit.replace_image'|trans({}, 'stela') : 'edit.add_image'|trans({}, 'stela') }}
+                        </label>
+
+                        <label for="{{ form.imageFile.vars.id }}" class="flex-grow border-2 border-dashed border-[#44403c] hover:border-[#c5a059] bg-[#0c0a09]/50 hover:bg-[#c5a059]/5 transition rounded-xl cursor-pointer flex flex-col items-center justify-center gap-2 min-h-[250px] group relative overflow-hidden">
+
+                            {{ form_widget(form.imageFile, {'attr': {'class': 'hidden', 'onchange': 'previewEditImage(event)'}}) }}
+
+                            {# Placeholder #}
+                            <div id="upload-placeholder" class="flex flex-col items-center z-10 transition-opacity duration-300 p-6 text-center">
+                                <div class="p-4 rounded-full bg-[#292524] group-hover:bg-[#c5a059]/20 transition mb-3">
+                                    <svg class="w-8 h-8 text-[#78716c] group-hover:text-[#c5a059] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                <span class="text-xs uppercase font-bold text-[#78716c] group-hover:text-[#e7e5e4] transition">
+                                    {{ 'edit.upload_cta'|trans({}, 'stela') }}
+                                </span>
+                                <span class="text-[9px] text-[#57534e] mt-1 font-mono">
+                                    {{ 'edit.upload_specs'|trans({}, 'stela') }}
+                                </span>
+                            </div>
+
+                            {# Preview Zone #}
+                            <div id="edit-preview-container" class="absolute inset-0 hidden bg-[#0c0a09] z-20 flex items-center justify-center">
+                                <img id="edit-image-preview" src="" class="max-w-full max-h-full w-auto h-auto object-contain">
+
+                                {# Bouton Annuler l'upload #}
+                                <button type="button" onclick="clearEditImage(event)" class="absolute top-3 right-3 p-2 bg-black/60 hover:bg-red-900/90 text-white rounded-full transition z-30 backdrop-blur-sm border border-white/10" title="{{ 'edit.remove_preview'|trans({}, 'stela') }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+
+                                <div class="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
+                                    <span class="text-[10px] bg-[#c5a059] text-[#0c0a09] px-3 py-1 rounded-full font-bold uppercase shadow-lg">
+                                        {{ 'edit.new_selection'|trans({}, 'stela') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </label>
+                        <div class="text-red-500 text-xs font-mono pl-1">{{ form_errors(form.imageFile) }}</div>
+                    </div>
+                </div>
+
+                {# --- FOOTER --- #}
+                <div class="flex items-center justify-end gap-4 border-t border-[#292524] pt-8 mt-4">
+                    <a href="{{ path('app_home') }}" class="px-6 py-2 text-[#78716c] hover:text-[#e7e5e4] font-cinzel text-xs uppercase tracking-widest transition">
+                        {{ 'edit.cancel'|trans({}, 'stela') }}
+                    </a>
+                    <button type="submit" class="px-8 py-3 bg-[#c5a059] hover:bg-[#b59049] text-[#0c0a09] font-bold font-cinzel text-sm uppercase tracking-widest rounded-sm shadow-[0_0_20px_rgba(197,160,89,0.3)] hover:shadow-[0_0_30px_rgba(197,160,89,0.5)] transition transform hover:-translate-y-0.5">
+                        {{ 'edit.submit'|trans({}, 'stela') }}
+                    </button>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function previewEditImage(event) {
+            const input = event.target;
+            const previewContainer = document.getElementById('edit-preview-container');
+            const previewImage = document.getElementById('edit-image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                    placeholder.classList.add('opacity-0');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearEditImage(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const input = document.querySelector('input[name*="[imageFile]"]');
+            const previewContainer = document.getElementById('edit-preview-container');
+            const previewImage = document.getElementById('edit-image-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+
+            if(input) input.value = '';
+            previewImage.src = '';
+            previewContainer.classList.add('hidden');
+            placeholder.classList.remove('opacity-0');
+        }
+    </script>
+{% endblock %}

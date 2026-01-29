@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-
 use App\Repository\UserSettingsRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserSettingsRepository::class)]
 class UserSettings
@@ -22,6 +22,7 @@ class UserSettings
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\Valid]
     private ?User $owner = null;
 
     #[ORM\Column]

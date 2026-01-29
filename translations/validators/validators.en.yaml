@@ -12,3 +12,8 @@ form:
         regex_error: "The Seal does not meet safety criteria."
     terms:
         is_true: "You must accept the ritual to proceed."
+
+errors.blank: "The stele cannot be blank."
+errors.too_long: "Your stele is too long ({{ value_length }} characters). The limit is {{ limit }}."
+errors.image_format: "The image format is not supported."
+errors.image_size: "The image is too heavy ({{ size }} {{ suffix }}). The maximum allowed is {{ limit }} {{ suffix }}."

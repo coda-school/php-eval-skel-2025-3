@@ -12,3 +12,8 @@ form:
         regex_error: "Le Sceau ne respecte pas les critères de sécurité."
     terms:
         is_true: "Vous devez accepter le rituel pour poursuivre."
+
+errors.blank: "La stèle ne peut pas être vierge."
+errors.too_long: "Votre stèle est trop longue ({{ value_length }} caractères). La limite est de {{ limit }}."
+errors.image_format: "Le format de l'image n'est pas supporté."
+errors.image_size: "Le fichier est trop lourd. Le maximum autorisé est {{ limit }} {{ suffix }}."

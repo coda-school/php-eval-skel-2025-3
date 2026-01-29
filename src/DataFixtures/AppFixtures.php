@@ -13,7 +13,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
-    // On récupère le hasher pour le Cryptage du mot de passe
     public function __construct(
         private readonly UserPasswordHasherInterface $hasher
     )
@@ -22,27 +21,27 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        // Initialisation de Faker
+        // Initialisation de Faker en français
         $faker = Factory::create('fr_FR');
 
-        // Tableau pour stocker nos users et créer des liens entre eux après
         $users = [];
 
-        // --- ADMIN USER ---
+        // --- 1. ADMIN USER (Batman) ---
         $admin = new User();
-        $admin->setEmail('admin@stela.com')
+        $admin->setEmail('admin@com')
             ->setUsername('Batman')
-            ->setPassword($this->hasher->hashPassword($admin, 'password')) // Mot de passe : "password"
+            ->setDisplayName('Le Chevalier Noir')
+            ->setPassword($this->hasher->hashPassword($admin, 'password'))
             ->setRoles(['ROLE_ADMIN'])
-            ->setBio('Je suis la nuit. Je suis le code.')
+            ->setBio('Je suis la nuit. Je suis le code. Le Scribe veille.')
             ->setIsVerified(true)
-            ->setAvatar('https://ui-avatars.com/api/?name=Batman&background=000&color=fff')
-            ->setCreatedDate(new DateTime());
+            ->setAvatar('https://ui-avatars.com/api/?name=Batman&background=000&color=fff&size=128')
+            ->setCreatedDate(new DateTime('-2 years'));
 
         $manager->persist($admin);
         $users[] = $admin;
 
-        // -> SETTINGS POUR L'ADMIN (Toujours Dark Mode pour Batman !)
+        // Settings Admin
         $adminSettings = new UserSettings();
         $adminSettings->setOwner($admin)
             ->setTheme('dark')
@@ -53,60 +52,71 @@ class AppFixtures extends Fixture
         $manager->persist($adminSettings);
 
 
-        // --- UTILISATEURS NORMAUX ---
+        // --- 2. UTILISATEURS NORMAUX (Les Fidèles) ---
         for ($i = 0; $i < 20; $i++) {
             $user = new User();
-            $user->setEmail($faker->email())
-                ->setUsername($faker->userName())
-                ->setPassword($this->hasher->hashPassword($user, 'password'))
-                ->setBio($faker->realText(100)) // Une bio de 100 caractères max
-                ->setIsVerified($faker->boolean(20)); // 20% de chance d'être vérifié
 
-            // Avatar aléatoire via UI Avatars
-            $user->setAvatar('https://ui-avatars.com/api/?name=' . $user->getUsername() . '&background=random')
+            // On génère des données distinctes pour le Nom et l'Éponyme
+            $firstName = $faker->firstName();
+            $lastName = $faker->lastName();
+            $displayName = $firstName . ' ' . $lastName;
+            $username = strtolower($firstName . $lastName . mt_rand(10, 99));
+
+            $user->setEmail($faker->unique()->email())
+            ->setUsername($username)
+                ->setDisplayName($displayName)
+                ->setPassword($this->hasher->hashPassword($user, 'password'))
+                ->setBio($faker->realText(80))
+                ->setIsVerified($faker->boolean(10)); // 10% de certifiés
+
+            // Avatar basé sur le Nom d'affichage
+            $user->setAvatar('https://ui-avatars.com/api/?name=' . urlencode($displayName) . '&background=random&color=fff&size=128')
                 ->setCreatedDate($faker->dateTimeBetween('-1 year'));
 
             $manager->persist($user);
             $users[] = $user;
 
-            // -> SETTINGS POUR L'UTILISATEUR COURANT
+            // Settings Utilisateur
             $settings = new UserSettings();
-            $settings->setOwner($user) // Obligatoire (OneToOne JoinColumn nullable=false)
-            ->setTheme($faker->randomElement(['light', 'dark']))
-                ->setLanguage($faker->randomElement(['fr', 'en', 'es']))
-                ->setNotificationsEnabled($faker->boolean(80)) // 80% activent les notifs
-                ->setIsPrivateAccount($faker->boolean(15));  // 15% de comptes privés
+            $settings->setOwner($user)
+                ->setTheme($faker->randomElement(['light', 'dark']))
+                ->setLanguage($faker->randomElement(['fr', 'en']))
+                ->setNotificationsEnabled($faker->boolean(80))
+                ->setIsPrivateAccount($faker->boolean(10));
 
             $manager->persist($settings);
         }
 
-        // --- TWEETS & FOLLOWS ---
+        // --- 3. STÈLES (Tweets) & ALLIANCES (Follows) ---
         foreach ($users as $user) {
 
-            // A. Chaque user poste entre 0 et 5 tweets
-            for ($j = 0; $j < mt_rand(0, 5); $j++) {
+            // A. Création de Stèles (0 à 8 par personne)
+            for ($j = 0; $j < mt_rand(0, 8); $j++) {
                 $tweet = new Tweet();
-                $tweet->setContent($faker->realText(140))
-                    ->setCreatedDate($faker->dateTimeBetween('-6 months'))
-                    ->setAuthor($user);
+                $tweet->setContent($faker->realText(mt_rand(50, 280))) // Entre 50 et 280 caractères
+                ->setCreatedDate($faker->dateTimeBetween('-6 months'))
+                    ->setAuthor($user)
+                    // On simule quelques stats aléatoires pour faire vivant
+                    ->setLikesCount(mt_rand(0, 50))
+                    ->setViewsCount(mt_rand(50, 1000))
+                    ->setRetweetCount(mt_rand(0, 10))
+                    ->setReplyCount(mt_rand(0, 5));
 
                 $manager->persist($tweet);
             }
 
-            // B. Chaque user suit quelques autres users aléatoires
-            // On prend 3 à 5 utilisateurs au hasard dans la liste et on les suit
-            $randomUsersToFollow = $faker->randomElements($users, mt_rand(3, 5));
+            // B. Création du Panthéon (Followers)
+            // Chaque user suit 3 à 7 autres users aléatoires
+            $randomUsersToFollow = $faker->randomElements($users, mt_rand(3, 7));
 
-
-            // On ne se suit pas soi-même
             foreach ($randomUsersToFollow as $userToFollow) {
+                // On ne se suit pas soi-même
                 if ($user !== $userToFollow) {
                     $user->addFollowing($userToFollow);
                 }
             }
         }
 
-        // Envoi de toutes nos fixtures en base de données
         $manager->flush();
     }
 }

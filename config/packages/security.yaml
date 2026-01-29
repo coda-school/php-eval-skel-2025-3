@@ -1,3 +1,4 @@
+# config/packages/security.yaml
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
@@ -14,27 +15,53 @@ security:
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed
-            pattern: ^/(_profiler|_wdt|assets|build)/
+            pattern: ^/(_profiler|_wdt|css|images|js|assets)/
             security: false
         main:
             lazy: true
+            provider: app_user_provider
+
+            # --- CONFIGURATION LOGIN ---
             form_login:
                 login_path: app_login
                 check_path: app_login
                 enable_csrf: true
+                # Redirection après succès (vers le fil d'actu)
+                default_target_path: app_home
+                # Si l'utilisateur voulait aller sur une page précise, on l'y renvoie
+                use_referer: true
+
+            # --- CONFIGURATION LOGOUT ---
             logout:
                 path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
-            # Activate different ways to authenticate:
+                # Redirection après déconnexion (retour au login)
+                target: app_login
+
+            # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
 
+    # --- CONTROLE D'ACCÈS (L'ordre est important !) ---
     # Note: Only the *first* matching rule is applied
     access_control:
+        # 1. On laisse passer la racine (pour que ton IndexController puisse rediriger)
         - { path: ^/$, roles: PUBLIC_ACCESS }
+
+        # 2. On laisse passer Login et Register (avec ou sans locale fr/en)
+        # %app.supported_locales% est défini plus bas
+        - { path: ^/(%app.supported_locales%)/login, roles: PUBLIC_ACCESS }
+        - { path: ^/(%app.supported_locales%)/register, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+
+        # 3. TOUT LE RESTE nécessite d'être connecté
+        - { path: ^/, roles: ROLE_USER }
+
+# Définition des paramètres utilisés dans access_control
+parameters:
+    app.supported_locales: 'en|fr'
 
 when@test:
     security:

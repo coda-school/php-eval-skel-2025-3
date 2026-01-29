@@ -1,121 +1,190 @@
-{% extends 'base.html.twig' %}
+{% extends '_layouts/in_app.html.twig' %}
 
-{% block title %}Profil de {{ user.username }}{% endblock %}
+{% block title %}Incarnation de {{ user.username }}{% endblock %}
 
-{% block body %}
-    <div class="min-h-screen bg-gray-100 py-10">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+{% block content %}
+    <div class="relative">
+        {# Header Navigation (Retour) #}
+        <div class="absolute top-0 left-0 p-4 z-20 flex items-center gap-6 bg-gradient-to-b from-black/80 to-transparent w-full">
+            <a href="{{ path('app_home') }}" class="p-2 bg-black/50 rounded-full hover:bg-black/70 text-white transition backdrop-blur-md">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </a>
+            <h2 class="font-bold text-lg font-cinzel text-white leading-none shadow-black drop-shadow-md">{{ user.username }}</h2>
+        </div>
 
-            {# Carte de profils #}
-            <div class="bg-white shadow-xl rounded-2xl overflow-hidden mb-8">
-                <div class="h-32 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+        {# Bannière #}
+        <div class="h-48 w-full bg-[#1c1917] relative overflow-hidden border-b border-[#292524]">
+            <div class="stela-texture opacity-40"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0c0a09] to-transparent"></div>
+        </div>
 
-                <div class="px-4 pb-6">
-                    <div class="relative flex justify-center">
-                        {# Partie Avatar #}
-                        <div class="-mt-16 ring-4 ring-white rounded-full overflow-hidden w-32 h-32 bg-white">
-                            {% if user.avatar %}
-                                <img src="{{ user.avatar }}" alt="Avatar" class="w-full h-full object-cover">
+        <div class="px-4 pb-4 relative">
+            {# Bloc Action (Suivre / Modifier) - Positionné à droite #}
+            <div class="absolute top-4 right-4 z-10">
+                {% if app.user == user %}
+                    <a href="{{ path('app_user_settings') }}" class="border border-[#44403c] text-[#e7e5e4] px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#292524] transition hover:border-[#c5a059]">
+                        {{ 'profile.actions.edit_profile'|trans({}, 'stela') }}
+                    </a>
+                {% else %}
+                    <form action="{{ path('app_user_follow', {'userToFollow': user.id, '_locale': app.request.locale}) }}" method="POST">
+                        {% if app.user in user.followers %}
+                            <button type="submit" class="border border-[#44403c] text-[#e7e5e4] px-4 py-1.5 rounded-full text-sm font-bold hover:bg-red-900/20 hover:text-red-400 hover:border-red-900 transition group">
+                                <span class="group-hover:hidden">{{ 'profile.actions.status_following'|trans({}, 'stela') }}</span>
+                                <span class="hidden group-hover:inline">{{ 'profile.actions.unfollow'|trans({}, 'stela') }}</span>
+                            </button>
+                        {% else %}
+                            <button type="submit" class="bg-[#e7e5e4] text-black px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#c5a059] transition">
+                                {{ 'profile.actions.follow'|trans({}, 'stela') }}
+                            </button>
+                        {% endif %}
+                    </form>
+                {% endif %}
+            </div>
+
+            {# Avatar #}
+            <div class="-mt-16 mb-3 relative inline-block">
+                <div class="h-32 w-32 rounded-full p-1 bg-[#0c0a09] border border-[#c5a059] overflow-hidden shadow-2xl">
+                    {% if user.avatar %}
+                        <img src="{{ asset(user.avatar) }}" class="h-full w-full object-cover rounded-full" alt="{{ user.username }}">
+                    {% else %}
+                        <div class="h-full w-full bg-[#1c1917] flex items-center justify-center text-4xl text-[#c5a059] font-cinzel">
+                            {{ user.username|slice(0,1)|upper }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Infos #}
+            <div>
+                <h1 class="text-xl font-bold font-cinzel text-[#e7e5e4]">{{ user.getName() }}</h1>
+                <p class="text-[#78716c] text-sm">@{{ user.username }}</p>
+            </div>
+
+            {# Bio #}
+            {% if user.bio %}
+                <p class="mt-4 text-[#d6d3d1] text-[15px] leading-relaxed max-w-md break-words">{{ user.bio }}</p>
+            {% else %}
+                <p class="mt-4 text-[#57534e] text-sm italic">{{ user.username }} {{ 'profile.bio.empty'|trans({}, 'stela') }}</p>
+            {% endif %}
+
+            {# Stats #}
+            <div class="flex gap-4 mt-4 text-[#78716c] text-sm">
+                <span class="hover:underline cursor-pointer"><strong class="text-[#e7e5e4]">{{ user.following|length }}</strong> {{ 'profile.subscriptions'|trans({}, 'stela') }}</span>
+                <span class="hover:underline cursor-pointer"><strong class="text-[#e7e5e4]">{{ user.followers|length }}</strong> {{ 'profile.followers'|trans({}, 'stela') }}</span>
+            </div>
+        </div>
+
+        {# Onglets #}
+        <div class="flex border-b border-[#292524] mt-2">
+            <div class="flex-1 text-center py-4 text-[#e7e5e4] font-bold text-sm border-b-2 border-[#c5a059] hover:bg-[#1c1917]/50 cursor-pointer transition">
+                {{ 'profile.tabs.steles'|trans({}, 'stela') }}
+            </div>
+            <div class="flex-1 text-center py-4 text-[#78716c] font-medium text-sm hover:bg-[#1c1917]/50 cursor-pointer transition">
+                {{ 'profile.tabs.replies'|trans({}, 'stela') }}
+            </div>
+            <div class="flex-1 text-center py-4 text-[#78716c] font-medium text-sm hover:bg-[#1c1917]/50 cursor-pointer transition">
+                {{ 'profile.tabs.media'|trans({}, 'stela') }}
+            </div>
+        </div>
+    </div>
+
+    {# Liste des Tweets du User #}
+    <div class="pb-20">
+        {% for tweet in user.tweets|sort((a, b) => b.createdDate <=> a.createdDate) %}
+            {# Correction: Ajout des URLs data pour le JS global #}
+            <article class="p-4 border-b border-[#292524] hover:bg-[#1c1917]/30 transition cursor-pointer tweet-card group"
+                     data-id="{{ tweet.id }}"
+                     data-view-url="{{ path('app_tweet_view', {'id': tweet.id}) }}">
+
+                <div class="flex gap-4">
+                    {# Avatar Petit #}
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-[#292524] border border-[#44403c] flex items-center justify-center text-[#78716c] font-bold overflow-hidden">
+                            {% if tweet.author.avatar %}
+                                <img src="{{ asset(tweet.author.avatar) }}" class="w-full h-full object-cover" alt="{{ tweet.author.username }}">
                             {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ user.username }}&size=128&background=random" class="w-full h-full object-cover" alt="Avatar">
+                                {{ tweet.author.username|slice(0, 1)|upper }}
                             {% endif %}
                         </div>
                     </div>
 
-                    <div class="text-center mt-4">
-                        {# Infos #}
-                        <h2 class="text-3xl font-bold text-gray-900">{{ user.username }}</h2>
+                    <div class="flex-1 min-w-0">
+                        {# Header Tweet #}
+                        <div class="flex items-center justify-between mb-1">
+                            <div class="flex items-center gap-2 truncate">
+                                <span class="font-bold text-[#e7e5e4] font-cinzel">{{ tweet.author.getName() }}</span>
+                                <span class="text-[#78716c] text-xs">@{{ tweet.author.username }}</span>
+                                <span class="text-[#78716c] text-xs">• {{ tweet.createdDate|date('d M') }}</span>
+                            </div>
 
-                        {% if user.bio %}
-                            <p class="text-gray-600 mt-2 max-w-lg mx-auto">{{ user.bio }}</p>
-                        {% else %}
-                            <p class="text-gray-400 italic mt-2">{{ user.username }} {{ 'stela.profile.bio.empty'|trans({}, 'stela') }}</p>
-                        {% endif %}
+                            {# Actions Propriétaire (Edit / Delete) #}
+                            {% if app.user == tweet.author %}
+                                <div class="flex items-center ml-2 gap-1">
+                                    <a href="{{ path('app_tweet_edit', {'id': tweet.id}) }}"
+                                       class="text-[#44403c] hover:text-[#c5a059] hover:bg-[#c5a059]/10 rounded-full p-1.5 transition"
+                                       title="Corriger">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                        </svg>
+                                    </a>
 
-                        {# stats #}
-                        <div class="flex justify-center gap-8 my-6 border-t border-b border-gray-100 py-4">
-                            <div class="text-center">
-                                <span class="block text-2xl font-bold text-gray-800">{{ user.tweets|length }}</span>
-                                <span class="text-sm text-gray-500 uppercase tracking-wide">{{ 'stela.tweet.plural'|trans({}, 'stela') }}</span>
-                            </div>
-                            <div class="text-center">
-                                <span class="block text-2xl font-bold text-gray-800">{{ user.following|length }}</span>
-                                <span class="text-sm text-gray-500 uppercase tracking-wide">{{ 'stela.profile.subscriptions'|trans({}, 'stela') }}</span>
-                            </div>
-                            <div class="text-center">
-                                <span class="block text-2xl font-bold text-gray-800">{{ user.followers|length }}</span>
-                                <span class="text-sm text-gray-500 uppercase tracking-wide">{{ 'stela.profile.followers'|trans({}, 'stela') }}</span>
-                            </div>
+                                    <form method="post" action="{{ path('app_tweet_delete', {'id': tweet.id}) }}" class="delete-form flex">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tweet.id) }}">
+                                        <button type="submit" class="text-[#44403c] hover:text-red-500 hover:bg-red-900/10 rounded-full p-1.5 transition" title="{{ 'tweet.actions.delete'|trans({}, 'stela') }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
                         </div>
 
-                        {# Boutons d'action #}
-                        {% if app.user and app.user != user %} {# Cas où un user est sur le profil d'un autre pas sur le sien #}
-                            <form action="{{ path('app_user_follow', {'userToFollow': user.id, '_locale': app.request.locale}) }}" method="POST">
-                                {% if app.user in user.followers %}
-                                    {# Bouton unfollow #}
-                                    <button type="submit" class="group relative inline-flex items-center justify-center px-8 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-red-50 hover:text-red-600 hover:border-red-300 transition-all duration-200">
-                                        <span>{{ 'stela.profile.status.following'|trans({}, 'stela') }}</span>
-                                        <span class="absolute inset-0 flex items-center justify-center text-red-600 opacity-0 group-hover:opacity-100 font-bold bg-red-50 rounded-full border border-red-300">
-                                        {{ 'stela.profile.actions.unfollow'|trans({}, 'stela') }}
-                                    </span>
-                                    </button>
-                                {% else %}
-                                    {# Bouton follow #}
-                                    <button type="submit" class="px-8 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 shadow-md transition-colors duration-200">
-                                        {{ 'stela.profile.actions.follow'|trans({}, 'stela') }}
-                                    </button>
-                                {% endif %}
-                            </form>
+                        {# Contenu #}
+                        <p class="text-[#d6d3d1] whitespace-pre-wrap leading-relaxed text-[15px] font-serif mb-3 break-words">{{ tweet.content }}</p>
+
+                        {# Image #}
+                        {% if tweet.imageFilename %}
+                            <div class="mt-2 mb-3 rounded-xl overflow-hidden border border-[#292524] max-w-full">
+                                <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}" class="w-full h-auto object-cover max-h-[500px]" alt="Illustration">
+                            </div>
                         {% endif %}
 
-                        {% if app.user == user %}
-                            <a href="#" class="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors">
-                                {{ 'stela.profile.actions.edit_profile'|trans({}, 'stela') }}
-                            </a>
-                        {% endif %}
+                        {# Actions #}
+                        <div class="flex justify-between max-w-md mt-3 text-[#78716c]">
+                            <button class="flex items-center gap-2 hover:text-blue-400 group text-xs transition">
+                                <div class="p-2 rounded-full group-hover:bg-blue-400/10">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                </div>
+                                <span>{{ tweet.replyCount }}</span>
+                            </button>
+
+                            {# Like corrigé avec persistance de l'état #}
+                            {% set is_liked = tweet.isLikedByUser(app.user) %}
+                            <button class="flex items-center gap-2 group text-xs transition like-btn {{ is_liked ? 'text-[#c5a059]' : 'hover:text-[#c5a059] text-[#78716c]' }}"
+                                    data-url="{{ path('app_tweet_like', {'id': tweet.id}) }}"
+                                    data-id="{{ tweet.id }}">
+                                <div class="p-2 rounded-full group-hover:bg-[#c5a059]/10">
+                                    <svg class="w-4 h-4 like-icon" fill="{{ is_liked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                </div>
+                                <span class="like-count font-bold">{{ tweet.likesCount }}</span>
+                            </button>
+
+                            {# Views #}
+                            <div class="flex items-center gap-2 group text-xs text-[#57534e]">
+                                <div class="p-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </div>
+                                <span class="view-count">{{ tweet.viewsCount }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </article>
+        {% else %}
+            <div class="p-10 text-center border-t border-[#292524]">
+                <p class="text-[#57534e] font-serif italic text-lg">{{ 'tweet.nothing'|trans({}, 'stela') }}</p>
             </div>
-
-            {# LES STELAS #}
-            <h3 class="text-xl font-bold text-gray-800 mb-4 px-2">{{ 'stela.tweet.last'|trans({}, 'stela') }}</h3>
-
-            <div class="space-y-4">
-                {% for tweet in user.tweets %}
-                    <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-100">
-                        <div class="flex items-start space-x-4">
-                            {# Mini avatar sur stelas #}
-                            <div class="flex-shrink-0">
-                                {% if user.avatar %}
-                                    <img class="h-10 w-10 rounded-full object-cover" src="{{ user.avatar }}" alt="">
-                                {% else %}
-                                    <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="">
-                                {% endif %}
-                            </div>
-
-                            {# Contenu du tweet #}
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between">
-                                    <p class="text-sm font-medium text-gray-900">
-                                        {{ user.username }}
-                                    </p>
-                                    <p class="text-xs text-gray-500">
-                                        {{ tweet.createdDate|date('d M • H:i') }}
-                                    </p>
-                                </div>
-                                <p class="mt-1 text-gray-800 text-base">
-                                    {{ tweet.content }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="text-center py-10 bg-white rounded-xl border border-dashed border-gray-300">
-                        <p class="text-gray-500">{{ 'stela.tweet.nothing'|trans({}, 'stela') }}</p>
-                    </div>
-                {% endfor %}
-            </div>
-
-        </div>
+        {% endfor %}
     </div>
 {% endblock %}

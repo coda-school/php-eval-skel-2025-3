@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 
 parameters:
+    tweets_directory: '%kernel.project_dir%/public/uploads/tweets'
 
 services:
     # default configuration for services in *this* file

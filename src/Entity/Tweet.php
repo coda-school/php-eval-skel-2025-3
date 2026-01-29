@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Impl\BaseEntity;
 use App\Repository\TweetRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TweetRepository::class)]
@@ -14,10 +16,10 @@ class Tweet extends BaseEntity
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 280)]
     private ?string $content = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 280, nullable: true)]
     private ?string $imageFilename = null;
 
     #[ORM\Column(options: ['default'=>0])]
@@ -38,6 +40,14 @@ class Tweet extends BaseEntity
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     private ?self $parentTweet = null;
+
+    #[ORM\OneToMany(mappedBy: 'tweet', cascade: ['remove'],  targetEntity: Like::class)]
+    private Collection $likes;
+
+    public function __construct()
+    {
+        $this->likes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -138,5 +148,49 @@ class Tweet extends BaseEntity
         $this->parentTweet = $parentTweet;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Like>
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(Like $like): static
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes->add($like);
+            $like->setTweet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLike(Like $like): static
+    {
+        if ($this->likes->removeElement($like)) {
+            if ($like->getTweet() === $this) {
+                $like->setTweet(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isLikedByUser(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        foreach ($this->likes as $like) {
+            if ($like->getUser() === $user) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

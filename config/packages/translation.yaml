@@ -6,3 +6,5 @@ framework:
         fallbacks:
             - fr
             - en
+        paths:
+            - '%kernel.project_dir%/translations/stela'

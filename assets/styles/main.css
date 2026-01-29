@@ -490,3 +490,135 @@ input:focus {
     width: 100%;
     opacity: 1;
 }
+
+/* ============================================================================
+   7. STELA HOME LAYOUT
+   Structure de la page d'accueil type "Twitter"
+   ============================================================================ */
+
+/* Layout Grid 3 colonnes */
+.stela-layout {
+    display: grid;
+    grid-template-columns: 80px 1fr; /* Mobile/Tablette */
+    max-width: 1280px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+@media (min-width: 1024px) {
+    .stela-layout {
+        grid-template-columns: 275px 600px 1fr; /* Desktop */
+        gap: 2rem;
+    }
+}
+
+/* Navigation Latérale */
+.stela-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.75rem 1rem;
+    border-radius: 9999px;
+    transition: background-color 0.2s;
+    color: #e7e5e4;
+    width: fit-content;
+    margin-bottom: 0.5rem;
+}
+
+.stela-nav-item:hover {
+    background-color: rgba(197, 160, 89, 0.1);
+    color: #c5a059;
+}
+
+.stela-nav-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.stela-nav-text {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: bold;
+    display: none; /* Caché sur mobile */
+}
+
+@media (min-width: 1024px) {
+    .stela-nav-text { display: block; }
+}
+
+/* Zone de Tweet (Input) */
+.stela-tweet-box {
+    border-bottom: 1px solid #292524;
+    padding: 1rem;
+    background: rgba(12, 10, 9, 0.5);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.stela-action-btn {
+    color: #c5a059;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.stela-action-btn:hover {
+    background-color: rgba(197, 160, 89, 0.1);
+}
+
+/* Le Feed */
+.stela-feed {
+    border-left: 1px solid #292524;
+    border-right: 1px solid #292524;
+    min-height: 100vh;
+}
+
+/* Sidebar Droite (Suggestions) */
+.stela-sidebar-right {
+    display: none;
+    padding-top: 1rem;
+}
+
+@media (min-width: 1024px) {
+    .stela-sidebar-right { display: block; }
+}
+
+.stela-card {
+    background-color: #1c1917;
+    border: 1px solid #292524;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================================
+   8. SCROLLBAR PERSONNALISÉE
+   Style fin et doré pour Chrome/Safari/Edge.
+   ============================================================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0c0a09;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #292524;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #c5a059;
+}
+
+/* Pour Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #292524 #0c0a09;
+}

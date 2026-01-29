@@ -1,64 +1,136 @@
-# =============================================================================
-# STELA - PAGES GRIMOIRE (EN)
-# =============================================================================
+title: "Stela"
+subtitle: "The Scribe awaits your truth"
+login_subtitle: "Embody your truth"
 
-stela:
-    title: "Stela"
-    subtitle: "The Scribe awaits your truth"
-    login_subtitle: "Embody your truth"
+# 📍 NAVIGATION & INTERFACE
+menu:
+    sanctuary: "The Agora"       # Fil d'actu
+    incarnation: "Sanctuary"     # Profil
+    ritual: "Structure"          # Settings
+    leave: "Dispel Spirit"       # Logout
+    messages: "Murmurs"
+    notifications: "Echoes"
 
-    # Field Labels
-    fields:
-        username: "Eponym"
-        email: "E-Hoot"
-        email_placeholder: "hibou@domain.com"
-        password: "Secret Seal"
+sidebar:
+    search_placeholder: "Fathom..."
+    trends_title: "Rumors"
+    footer_rights: "© 2025 Stela Corp."
 
-    # Password Strength Criteria
-    checklist:
-        check1: "8 char."
-        check2: "lowercase"
-        check3: "uppercase"
-        check4: "number"
-        check5: "special"
+# 🔐 ACCESS & FIELDS
+fields:
+    username: "Eponym (@id)"
+    username_placeholder: "LockeInLondon"
+    display_name: "Identity (Display Name)"
+    email: "Owl-Mail"
+    email_placeholder: "owl@domain.com"
+    password: "The Key"
+    bio: "Legend"
+    avatar: "Shape Image"
 
-    # Actions and Buttons
-    buttons:
-        register: "Engrave my Oath"
-        register2: "Take an Oath"
-        login: "Embody Yourself"
+checklist:
+    check1: "8 char."
+    check2: "lowercase"
+    check3: "uppercase"
+    check4: "number"
+    check5: "special"
 
-    # Navigation Links
-    links:
-        already_member: "Are you already among the faithful?"
-        new_member: "New here?"
+# ⚡ ACTIONS (BUTTONS)
+buttons:
+    register: "Take Oath"
+    register2: "Take Oath"
+    login: "Incarnate"
+    save: "Seal Structure"
+    back: "Return to Agora"
 
-    # Consent Section
-    terms:
-        title: "The Ritual"
-        text: "I consent to respect the decrees of the Guardians."
+links:
+    already_member: "Are you already among the Faithful?"
+    new_member: "New here?"
 
-    # Connection State
-    connected:
-        text: "Already embodied :"
-        button: "Dispel the spirit"
+terms:
+    title: "The Pact"
+    text: "I consent to respect the decrees of the Guardians."
 
-    # Tweets
-    tweet:
-        single: "Stele"
-        plural: "Stelea"
-        last: "Last Stelea"
-        nothing: "This Eponym has yet to leave a mark."
+connected:
+    text: "Already incarnated:"
+    button: "Dispel Spirit"
 
-    # Profile
-    profile:
-        bio:
-            empty: "did not defined a biography."
-        subscriptions: "Pantheon"
-        followers: "Witnesses"
-        actions:
-            follow: "Track"
-            unfollow: "Lose the Trail"
-            edit_profile: "Forge My Trace"
-        status:
-            following: "Under Watch"
+# 💎 OBJECTS & STATS (TWEETS)
+tweet:
+    single: "Stele"
+    plural: "Stelae"
+    last: "Latest Stelae"
+    nothing: "Silence reigns. This Eponym has yet to mark the stone."
+    placeholder: "Engrave your truth..."
+    delete_confirm: "Do you truly wish to erode this stele?"
+
+    # Stats
+    views: "Contemplations"
+    likes: "Consecrations"
+
+    actions:
+        engrave: "Engrave"
+        delete: "Erode"
+        reply: "Annotate"
+        like: "Consecrate"
+        retweet: "Replicate"
+        share: "Propagate"
+        report: "Denounce"
+        pin: "Cornerstone"
+
+# 🏛️ PROFILE & SOCIAL
+profile:
+    bio:
+        empty: "has engraved no legend."
+    subscriptions: "Covenant"
+    followers: "Initiates"
+    tabs:
+        steles: "Engraved Stelae"
+        replies: "Annotations"
+        media: "Relics"
+    actions:
+        follow: "Track"
+        unfollow: "Cease Tracking"
+        edit_profile: "Structure"
+        block: "Wall Off"
+        status_following: "Tracked"
+
+# SETTINGS (STRUCTURE)
+settings:
+    title: "Structure"
+    subtitle: "Configure your incarnation"
+    preferences_title: "Preferences"
+    theme: "Atmosphere"
+    language: "Language"
+    notifications: "Receive Echoes"
+    private_account: "Hermetic Sanctuary (Private)"
+    themes:
+        light: "Dawn (Light)"
+        dark: "Dusk (Dark)"
+
+# --- MODALES & POPUPS ---
+notifications:
+    tweet_created: "Your truth has been engraved in stone.."
+    settings_saved: "Your preferences have been sealed in stone."
+    tweet_deleted: "The Stele has been reduced to dust."
+
+modal:
+    delete_title: "Erosion"
+    delete_confirm: "Are you certain you wish to crumble this stele to dust? This act is irreversible."
+    cancel: "Spare"
+    confirm: "Reduce to Dust"
+
+# EDIT PAGE
+edit:
+    title: "Ritual of Correction"
+    close: "Close"
+    content_label: "Your Truth"
+    current_image: "Current Stele"
+    delete_image: "Erode this image"
+    replace_image: "Replace with"
+    add_image: "Add an Engraving"
+    upload_cta: "Click to import"
+    upload_specs: "JPG, PNG, WEBP • Max 10 MB"
+    new_selection: "New selection"
+    remove_preview: "Remove this image"
+    cancel: "Cancel"
+    submit: "Seal the modifications"

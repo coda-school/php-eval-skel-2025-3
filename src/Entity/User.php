@@ -38,6 +38,9 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     #[ORM\Column(length: 30, unique: true)]
     private ?string $username = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $displayName = null;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $bio = null;
 
@@ -57,10 +60,12 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     private Collection $followers;
 
     #[ORM\OneToMany(targetEntity: Tweet::class, mappedBy: 'author', orphanRemoval: true)]
+    #[ORM\OrderBy(['createdDate' => 'DESC'])]
     private Collection $tweets;
 
     public function __construct()
     {
+        parent::__construct();
         $this->following = new ArrayCollection();
         $this->followers = new ArrayCollection();
         $this->tweets = new ArrayCollection();
@@ -82,7 +87,6 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         $roles[] = 'ROLE_USER';
         return array_unique($roles);
     }
-
     public function setRoles(array $roles): static { $this->roles = $roles; return $this; }
 
     public function getPassword(): ?string { return $this->password; }
@@ -94,11 +98,18 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
         $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
         return $data;
     }
-
     public function eraseCredentials(): void {}
 
     public function getUsername(): ?string { return $this->username; }
     public function setUsername(string $username): static { $this->username = $username; return $this; }
+
+    public function getDisplayName(): ?string { return $this->displayName; }
+    public function setDisplayName(?string $displayName): static { $this->displayName = $displayName; return $this; }
+
+    public function getName(): string
+    {
+        return $this->displayName ?: $this->username;
+    }
 
     public function getBio(): ?string { return $this->bio; }
     public function setBio(?string $bio): static { $this->bio = $bio; return $this; }
@@ -123,13 +134,27 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
     }
     public function removeFollower(self $follower): static { if ($this->followers->removeElement($follower)) { $follower->removeFollowing($this); } return $this; }
 
-    public function getTweets(): Collection { return $this->tweets; }
+    /**
+     * @return Collection<int, Tweet>
+     */
+    public function getTweets(): Collection
+    {
+        return $this->tweets->filter(function(Tweet $tweet) {
+            return $tweet->isDeleted() === false;
+        });
+    }
+
     public function addTweet(Tweet $tweet): static {
         if (!$this->tweets->contains($tweet)) { $this->tweets->add($tweet); $tweet->setAuthor($this); }
         return $this;
     }
+
     public function removeTweet(Tweet $tweet): static {
-        if ($this->tweets->removeElement($tweet)) { if ($tweet->getAuthor() === $this) { $tweet->setAuthor(null); } }
+        if ($this->tweets->removeElement($tweet)) {
+            if ($tweet->getAuthor() === $this) {
+                $tweet->setAuthor(null);
+            }
+        }
         return $this;
     }
 }

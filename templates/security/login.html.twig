@@ -16,11 +16,11 @@
                 {# En-tête : Identité visuelle #}
                 <div class="text-center mb-10 space-y-3">
                     <h1 class="text-5xl text-[#c5a059] uppercase tracking-[0.3em] font-bold pl-4 font-cinzel" style="text-shadow: 0 4px 10px rgba(0,0,0,0.8);">
-                        {{ 'stela.title'|trans({}, 'stela') }}
+                        {{ 'title'|trans({}, 'stela') }}
                     </h1>
                     <div class="h-[1px] w-32 bg-gradient-to-r from-transparent via-[#c5a059]/70 to-transparent mx-auto"></div>
                     <p class="text-[#8c7b6c] text-xs uppercase tracking-[0.2em] pt-2 font-bold">
-                        {{ 'stela.login_subtitle'|trans({}, 'stela') }}
+                        {{ 'login_subtitle'|trans({}, 'stela') }}
                     </p>
                 </div>
 
@@ -45,9 +45,9 @@
                     {% if app.user %}
                         <div class="p-3 border border-[#c5a059]/20 bg-[#c5a059]/5 mb-6 text-center">
                             <p class="text-[10px] text-[#c5a059] uppercase tracking-widest font-bold">
-                                {{ 'stela.connected.text'|trans({}, 'stela') }} {{ app.user.userIdentifier }}
+                                {{ 'connected.text'|trans({}, 'stela') }} {{ app.user.userIdentifier }}
                             </p>
-                            <a href="{{ logout_path() }}" class="text-[10px] text-[#78716c] hover:text-[#fffcf5] underline transition-colors">{{ 'stela.connected.button'|trans({}, 'stela') }}</a>
+                            <a href="{{ logout_path() }}" class="text-[10px] text-[#78716c] hover:text-[#fffcf5] underline transition-colors">{{ 'connected.button'|trans({}, 'stela') }}</a>
                         </div>
                     {% endif %}
 
@@ -57,7 +57,7 @@
                     =========================
                     #}
                     <div class="stela-group group">
-                        <label for="username" class="stela-label">{{ 'stela.fields.email'|trans({}, 'stela') }}</label>
+                        <label for="username" class="stela-label">{{ 'fields.email'|trans({}, 'stela') }}</label>
                         <div class="stela-input-groove">
                             <input type="email"
                                    value="{{ last_username }}"
@@ -78,7 +78,7 @@
                     =========================
                     #}
                     <div class="stela-group group">
-                        <label for="password" class="stela-label">{{ 'stela.fields.password'|trans({}, 'stela') }}</label>
+                        <label for="password" class="stela-label">{{ 'fields.password'|trans({}, 'stela') }}</label>
                         <div class="stela-input-groove">
                             <input type="password"
                                    name="_password"
@@ -116,11 +116,11 @@
                 {# Navigation vers l'inscription #}
                 <div class="stela-link-container">
                     <div class="stela-link-line"></div>
-                    <p class="text-[#78716c] text-[10px] uppercase tracking-[0.25em] mb-4 font-bold mt-4">{{ 'stela.links.new_member'|trans({}, 'stela') }}</p>
+                    <p class="text-[#78716c] text-[10px] uppercase tracking-[0.25em] mb-4 font-bold mt-4">{{ 'links.new_member'|trans({}, 'stela') }}</p>
                     <a href="{{ path('app_register', {'_locale': app.request.locale}) }}" class="stela-link group">
                         <span class="stela-link-arrow left">►</span>
                         <span class="stela-link-text">
-                            {{ 'stela.buttons.register2'|trans({}, 'stela') }}
+                            {{ 'buttons.register2'|trans({}, 'stela') }}
                             <span class="stela-link-underline"></span>
                         </span>
                         <span class="stela-link-arrow right">◄</span>

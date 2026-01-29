@@ -15,29 +15,17 @@ class Like extends BaseEntity
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $userid = null;
-
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Tweet::class, inversedBy: 'likes')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Tweet $tweet = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUserId(): ?User
-    {
-        return $this->userid;
-    }
-
-    public function setUserId(?User $user_id): static
-    {
-        $this->userid = $user_id;
-
-        return $this;
     }
 
     public function getTweet(): ?Tweet
@@ -48,6 +36,18 @@ class Like extends BaseEntity
     public function setTweet(?Tweet $tweet): static
     {
         $this->tweet = $tweet;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

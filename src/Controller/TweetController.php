@@ -55,6 +55,13 @@ class TweetController extends AbstractController
         return $this->json(['views' => $tweet->getViewsCount()]);
     }
 
+    #[Route('/{_locale}/tweet/{id}', name: 'app_tweet_show', requirements: ['_locale' => 'en|fr'], methods: ['GET'])]
+    public function show(Tweet $tweet): Response
+    {
+        return $this->render('tweet/show.html.twig', [
+            'tweet' => $tweet,
+        ]);
+    }
     #[Route('/{_locale}/tweet/{id}/edit', name: 'app_tweet_edit', requirements: ['_locale' => 'en|fr'], methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function edit(Request $request, Tweet $tweet, EntityManagerInterface $entityManager, TranslatorInterface $translator, SluggerInterface $slugger): Response

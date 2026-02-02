@@ -1,0 +1,34 @@
+{% extends 'layouts/standard.html.twig' %}
+
+{% block content %}
+    <div class="max-w-2xl mx-auto p-6">
+
+        <h1 class="text-xl font-bold mb-2">
+            {{ tweet.author.username }}
+        </h1>
+
+        <p class="mb-4">
+            {{ tweet.content }}
+        </p>
+
+        <div class="text-sm text-gray-500">
+            👀 {{ tweet.viewsCount }} vues
+            · ❤️ {{ tweet.likesCount }} likes
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('{{ path('app_tweet_view', {
+                _locale: app.request.locale,
+                id: tweet.id
+            }) }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+        });
+    </script>
+{% endblock %}

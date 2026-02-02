@@ -193,4 +193,15 @@ class Tweet extends BaseEntity
 
         return false;
     }
+
+    public function ViewsCount(): self {
+        $this->viewsCount++;
+        return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getContent() ?: 'Tweet #' . $this->getId();
+    }
+
 }

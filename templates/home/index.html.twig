@@ -79,13 +79,25 @@
 
     <div class="pb-20">
         {% for tweet in tweets %}
-            <article class="p-4 border-b border-[#292524] hover:bg-[#1c1917]/30 transition cursor-pointer tweet-card group"
+            <article onclick="window.location='{{ path('app_tweet_show', {
+                _locale: app.request.locale,
+                id: tweet.id
+            }) }}'"
+                     class="p-4 border-b border-[#292524] hover:bg-[#1c1917]/30 transition cursor-pointer tweet-card group"
                      data-id="{{ tweet.id }}"
                      data-view-url="{{ path('app_tweet_view', {'id': tweet.id}) }}">
 
                 <div class="flex gap-4">
-                    <a href="{{ path('app_user_show', {'id': tweet.author.id}) }}" class="flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full bg-[#292524] border border-[#44403c] flex items-center justify-center text-[#78716c] font-bold overflow-hidden hover:border-[#c5a059] transition">
+
+                    {#  Avatar cliquable → stopPropagation #}
+                    <a onclick="event.stopPropagation()"
+                       href="{{ path('app_user_show', {'id': tweet.author.id}) }}"
+                       class="flex-shrink-0">
+
+                        <div class="w-10 h-10 rounded-full bg-[#292524] border border-[#44403c]
+                        flex items-center justify-center text-[#78716c] font-bold overflow-hidden
+                        hover:border-[#c5a059] transition">
+
                             {% if tweet.author.avatar %}
                                 <img src="{{ asset(tweet.author.avatar) }}" class="w-full h-full object-cover">
                             {% else %}
@@ -93,60 +105,138 @@
                             {% endif %}
                         </div>
                     </a>
+
                     <div class="flex-1 min-w-0">
+
                         <div class="flex items-center justify-between mb-1">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <a href="{{ path('app_user_show', {'id': tweet.author.id}) }}" class="font-bold text-[#e7e5e4] hover:underline font-cinzel truncate">{{ tweet.author.getName }}</a>
+
+                                {#  Username cliquable → stopPropagation #}
+                                <a onclick="event.stopPropagation()"
+                                   href="{{ path('app_user_show', {'id': tweet.author.id}) }}"
+                                   class="font-bold text-[#e7e5e4] hover:underline font-cinzel truncate">
+
+                                    {{ tweet.author.getName }}
+                                </a>
+
                                 <span class="text-[#78716c] text-sm truncate">@{{ tweet.author.username }}</span>
                                 <span class="text-[#44403c] text-xs">•</span>
-                                <span class="text-[#78716c] text-xs hover:underline">{{ tweet.createdDate ? tweet.createdDate|date('d M') : 'Now' }}</span>
+                                <span class="text-[#78716c] text-xs hover:underline">
+                        {{ tweet.createdDate ? tweet.createdDate|date('d M') : 'Now' }}
+                    </span>
                             </div>
+
                             {% if app.user == tweet.author %}
                                 <div class="flex items-center ml-2 gap-1">
-                                    <a href="{{ path('app_tweet_edit', {'id': tweet.id}) }}" class="text-[#44403c] hover:text-[#c5a059] hover:bg-[#c5a059]/10 rounded-full p-1.5 transition" title="Corriger">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+
+                                    {#  Edit → stopPropagation #}
+                                    <a onclick="event.stopPropagation()"
+                                       href="{{ path('app_tweet_edit', {'id': tweet.id}) }}"
+                                       class="text-[#44403c] hover:text-[#c5a059]
+                                  hover:bg-[#c5a059]/10 rounded-full p-1.5 transition"
+                                       title="Corriger">
+
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                             viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                        </svg>
                                     </a>
-                                    <form method="post" action="{{ path('app_tweet_delete', {'id': tweet.id}) }}" class="delete-form flex">
+
+                                    {#  Delete → stopPropagation #}
+                                    <form onclick="event.stopPropagation()"
+                                          method="post"
+                                          action="{{ path('app_tweet_delete', {'id': tweet.id}) }}"
+                                          class="delete-form flex">
+
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tweet.id) }}">
-                                        <button type="submit" class="text-[#44403c] hover:text-red-500 hover:bg-red-900/10 rounded-full p-1.5 transition" title="Supprimer">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+
+                                        <button onclick="event.stopPropagation()"
+                                                type="submit"
+                                                class="text-[#44403c] hover:text-red-500
+                                           hover:bg-red-900/10 rounded-full p-1.5 transition"
+                                                title="Supprimer">
+
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                 viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
                                         </button>
                                     </form>
+
                                 </div>
                             {% endif %}
                         </div>
-                        <p class="text-[#d6d3d1] whitespace-pre-wrap leading-relaxed text-[15px] font-serif mb-3 break-words">{{ tweet.content }}</p>
+
+                        <p class="text-[#d6d3d1] whitespace-pre-wrap leading-relaxed text-[15px]
+                      font-serif mb-3 break-words">
+                            {{ tweet.content }}
+                        </p>
+
                         {% if tweet.imageFilename %}
                             <div class="mt-2 mb-3 rounded-xl overflow-hidden border border-[#292524] max-w-full">
-                                <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}" alt="Image" class="w-full h-auto object-cover max-h-[500px]">
+                                <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}"
+                                     alt="Image"
+                                     class="w-full h-auto object-cover max-h-[500px]">
                             </div>
                         {% endif %}
+
                         <div class="flex justify-between max-w-md mt-3 text-[#78716c]">
-                            <button class="flex items-center gap-2 hover:text-blue-400 group text-xs transition">
-                                <div class="p-2 rounded-full group-hover:bg-blue-400/10"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg></div>
+
+                            {#  Reply → stopPropagation #}
+                            <button onclick="event.stopPropagation()"
+                                    class="flex items-center gap-2 hover:text-blue-400 group text-xs transition">
+                                <div class="p-2 rounded-full group-hover:bg-blue-400/10">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    </svg>
+                                </div>
                                 <span>{{ tweet.replyCount }}</span>
                             </button>
 
-                            {# --- BOUTON LIKE--- #}
+                            {#  Like → stopPropagation #}
                             {% set is_liked = tweet.isLikedByUser(app.user) %}
 
-                            <button class="flex items-center gap-2 group text-xs transition like-btn {{ is_liked ? 'text-[#c5a059]' : 'hover:text-[#c5a059] text-[#78716c]' }}"
+                            <button onclick="event.stopPropagation()"
+                                    class="flex items-center gap-2 group text-xs transition like-btn
+                               {{ is_liked ? 'text-[#c5a059]' : 'hover:text-[#c5a059] text-[#78716c]' }}"
                                     data-url="{{ path('app_tweet_like', {'id': tweet.id}) }}"
                                     data-id="{{ tweet.id }}">
+
                                 <div class="p-2 rounded-full group-hover:bg-[#c5a059]/10">
-                                    <svg class="w-4 h-4 like-icon" fill="{{ is_liked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    <svg class="w-4 h-4 like-icon"
+                                         fill="{{ is_liked ? 'currentColor' : 'none' }}"
+                                         stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                    </svg>
                                 </div>
+
                                 <span class="like-count font-bold">{{ tweet.likesCount }}</span>
                             </button>
 
                             <div class="flex items-center gap-2 group text-xs text-[#57534e]">
-                                <div class="p-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+                                <div class="p-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                         viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </div>
                                 <span class="view-count">{{ tweet.viewsCount }}</span>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </article>
+
         {% else %}
             <div class="p-10 text-center border-t border-[#292524]">
                 <p class="text-[#57534e] font-serif italic text-lg">{{ 'tweet.nothing'|trans({}, 'stela') }}</p>
@@ -202,5 +292,6 @@
                 window.requestAnimationFrame(() => { window.updateTweetStats(textarea); });
             }
         });
+
     </script>
 {% endblock %}

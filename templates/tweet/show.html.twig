@@ -1,34 +1,107 @@
-{% extends 'layouts/standard.html.twig' %}
+{% extends '_layouts/in_app.html.twig' %}
+
+{% block title %}
+    Tweet de {{ tweet.author.username }} - STELA
+{% endblock %}
 
 {% block content %}
-    <div class="max-w-2xl mx-auto p-6">
 
-        <h1 class="text-xl font-bold mb-2">
-            {{ tweet.author.username }}
-        </h1>
+    <div class="border-b border-[#292524] p-6">
 
-        <p class="mb-4">
-            {{ tweet.content }}
-        </p>
+        <div class="flex gap-4">
 
-        <div class="text-sm text-gray-500">
-            👀 {{ tweet.viewsCount }} vues
-            · ❤️ {{ tweet.likesCount }} likes
+            <a href="{{ path('app_user_show', {'id': tweet.author.id}) }}">
+                <div class="w-12 h-12 rounded-full bg-[#292524] border border-[#44403c]
+                            flex items-center justify-center text-[#78716c]
+                            font-bold overflow-hidden hover:border-[#c5a059] transition">
+                    {% if tweet.author.avatar %}
+                        <img src="{{ asset(tweet.author.avatar) }}" class="w-full h-full object-cover" alt="author">
+                    {% else %}
+                        {{ tweet.author.username|slice(0,1)|upper }}
+                    {% endif %}
+                </div>
+            </a>
+
+            <div class="flex-1 min-w-0">
+
+                {# Nom + username + date #}
+                <div class="flex items-center gap-2 flex-wrap mb-2">
+                    <span class="font-bold text-[#e7e5e4] font-cinzel">
+                        {{ tweet.author.getName }}
+                    </span>
+
+                    <span class="text-[#78716c] text-sm">
+                        @{{ tweet.author.username }}
+                    </span>
+
+                    <span class="text-[#44403c] text-xs">•</span>
+
+                    <span class="text-[#78716c] text-xs">
+                        {{ tweet.createdDate ? tweet.createdDate|date('d M Y') : 'Now' }}
+                    </span>
+                </div>
+
+                {# Contenu tweet #}
+                <p class="text-[#d6d3d1] whitespace-pre-wrap leading-relaxed text-[16px]
+                          font-serif break-words mb-4">
+                    {{ tweet.content }}
+                </p>
+
+                {# Image #}
+                {% if tweet.imageFilename %}
+                    <div class="rounded-xl overflow-hidden border border-[#292524] mb-4">
+                        <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}"
+                             class="w-full object-cover max-h-[600px]" alt="tweet">
+                    </div>
+                {% endif %}
+
+                {# Stats #}
+                <div class="flex gap-6 text-sm text-[#78716c]
+                            border-t border-[#292524] pt-4">
+
+                    {# Like #}
+                    {% set is_liked = tweet.isLikedByUser(app.user) %}
+                    <span class="flex items-center gap-1 text-xs {{ is_liked ? 'text-[#c5a059]' : 'text-[#78716c]' }} like-btn"
+                          data-url="{{ path('app_tweet_like', {'id': tweet.id}) }}"
+                          data-id="{{ tweet.id }}">
+                        <svg class="w-4 h-4 like-icon" fill="{{ is_liked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        <span class="like-count font-bold">{{ tweet.likesCount }}</span> likes
+                    </span>
+
+                    {# Vues #}
+                    <span class="flex items-center gap-1 text-xs text-[#78716c]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        <span class="view-count" data-id="{{ tweet.id }}">{{ tweet.viewsCount }}</span> vues
+                    </span>
+
+                </div>
+
+            </div>
         </div>
-
     </div>
 
+    {# JS pour incrémenter le compteur de vues #}
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('{{ path('app_tweet_view', {
-                _locale: app.request.locale,
-                id: tweet.id
-            }) }}', {
+            const viewEl = document.querySelector(".view-count[data-id='{{ tweet.id }}']");
+            if (!viewEl) return;
+
+            fetch('{{ path('app_tweet_view', {id: tweet.id}) }}', {
                 method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(res => res.json())
+                .then(data => { viewEl.textContent = data.views; })
+                .catch(err => console.error(err));
         });
     </script>
+
 {% endblock %}

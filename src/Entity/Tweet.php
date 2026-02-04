@@ -194,7 +194,7 @@ class Tweet extends BaseEntity
         return false;
     }
 
-    public function ViewsCount(): self {
+    public function incrementViews(): self {
         $this->viewsCount++;
         return $this;
     }

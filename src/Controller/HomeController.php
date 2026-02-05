@@ -56,7 +56,7 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $tweets = $tweetRepository->findBy(['isDeleted' => false], ['createdDate' => 'DESC']);
+        $tweets = $tweetRepository->findAllMainTweets();
 
         return $this->render('home/index.html.twig', [
             'tweets' => $tweets,

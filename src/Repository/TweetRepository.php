@@ -27,7 +27,18 @@ class TweetRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    // src/Repository/TweetRepository.php
 
+    public function findAllMainTweets(): array
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.parentTweet IS NULL')
+            ->andWhere('t.isDeleted = :deleted')
+            ->setParameter('deleted', false)
+            ->orderBy('t.createdDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     // Note: Pour les tweets d'un user spécifique, $user->getTweets() suffit
     // si on ajoute l'annotation @ORM\OrderBy({"createdDate" = "DESC"}) dans l'entité User sur la relation OneToMany
 }

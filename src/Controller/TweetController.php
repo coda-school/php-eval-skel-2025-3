@@ -9,6 +9,7 @@ use App\Repository\LikeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,14 +56,15 @@ class TweetController extends AbstractController
         return $this->json(['views' => $tweet->getViewsCount()]);
     }
 
-    #[Route('/{_locale}/tweet/{id}', name: 'app_tweet_show', requirements: ['_locale' => 'en|fr'], methods: ['GET', 'POST'])]
+    #[Route('/{_locale}/tweet/{id}', name: 'app_tweet_show', methods: ['GET', 'POST'])]
     public function show(
         Tweet $tweet,
         Request $request,
         EntityManagerInterface $em,
-        TranslatorInterface $translator
-    ): Response
-    {
+        TranslatorInterface $translator,
+        SluggerInterface $slugger
+    ): Response {
+        // 1. Création de la réponse
         $reply = new Tweet();
         $form = $this->createForm(TweetType::class, $reply);
         $form->handleRequest($request);
@@ -70,20 +72,30 @@ class TweetController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-            $user = $this->getUser();
-            $reply->setAuthor($user);
+            $reply->setAuthor($this->getUser());
             $reply->setParentTweet($tweet);
             $tweet->setReplyCount($tweet->getReplyCount() + 1);
+
+            $imageFile = $form->get('imageFile')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move($this->getParameter('tweets_directory'), $newFilename);
+                    $reply->setImageFilename($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'Erreur lors de la gravure de l\'image.');
+                }
+            }
 
             $em->persist($reply);
             $em->flush();
 
             $this->addFlash('success', $translator->trans('notifications.reply_posted', [], 'stela'));
 
-            return $this->redirectToRoute('app_tweet_show', [
-                'id' => $tweet->getId(),
-                '_locale' => $request->getLocale()
-            ]);
+            return $this->redirectToRoute('app_tweet_show', ['id' => $tweet->getId()]);
         }
 
         return $this->render('tweet/show.html.twig', [

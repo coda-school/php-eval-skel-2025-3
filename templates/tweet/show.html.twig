@@ -1,107 +1,189 @@
 {% extends '_layouts/in_app.html.twig' %}
 
-{% block title %}
-    Tweet de {{ tweet.author.username }} - STELA
-{% endblock %}
+{% block title %}Tweet de {{ tweet.author.username }} - STELA{% endblock %}
 
 {% block content %}
-
-    <div class="border-b border-[#292524] p-6">
-
+    <div class="border-b border-[#292524] p-6 bg-[#1c1917]/20">
         <div class="flex gap-4">
-
-            <a href="{{ path('app_user_show', {'id': tweet.author.id}) }}">
-                <div class="w-12 h-12 rounded-full bg-[#292524] border border-[#44403c]
-                            flex items-center justify-center text-[#78716c]
-                            font-bold overflow-hidden hover:border-[#c5a059] transition">
+            <a href="{{ path('app_user_show', {'id': tweet.author.id}) }}" class="shrink-0">
+                <div class="w-14 h-14 rounded-full bg-[#292524] border border-[#44403c] flex items-center justify-center text-[#78716c] overflow-hidden hover:border-[#c5a059] transition">
                     {% if tweet.author.avatar %}
-                        <img src="{{ asset(tweet.author.avatar) }}" class="w-full h-full object-cover" alt="author">
+                        <img src="{{ asset(tweet.author.avatar) }}" class="w-full h-full object-cover">
                     {% else %}
-                        {{ tweet.author.username|slice(0,1)|upper }}
+                        <span class="font-bold text-lg">{{ tweet.author.username|slice(0,1)|upper }}</span>
                     {% endif %}
                 </div>
             </a>
 
             <div class="flex-1 min-w-0">
-
-                {# Nom + username + date #}
-                <div class="flex items-center gap-2 flex-wrap mb-2">
-                    <span class="font-bold text-[#e7e5e4] font-cinzel">
-                        {{ tweet.author.getName }}
-                    </span>
-
-                    <span class="text-[#78716c] text-sm">
-                        @{{ tweet.author.username }}
-                    </span>
-
-                    <span class="text-[#44403c] text-xs">•</span>
-
-                    <span class="text-[#78716c] text-xs">
-                        {{ tweet.createdDate ? tweet.createdDate|date('d M Y') : 'Now' }}
-                    </span>
+                <div class="flex flex-col mb-2">
+                    <span class="font-bold text-[#e7e5e4] font-cinzel text-lg">{{ tweet.author.getName }}</span>
+                    <span class="text-[#78716c] text-sm">@{{ tweet.author.username }}</span>
                 </div>
 
-                {# Contenu tweet #}
-                <p class="text-[#d6d3d1] whitespace-pre-wrap leading-relaxed text-[16px]
-                          font-serif break-words mb-4">
+                <p class="text-[#e7e5e4] whitespace-pre-wrap leading-relaxed text-xl font-serif break-words mb-4">
                     {{ tweet.content }}
                 </p>
 
-                {# Image #}
                 {% if tweet.imageFilename %}
-                    <div class="rounded-xl overflow-hidden border border-[#292524] mb-4">
-                        <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}"
-                             class="w-full object-cover max-h-[600px]" alt="tweet">
+                    <div class="rounded-xl overflow-hidden border border-[#292524] mb-4 shadow-lg">
+                        <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}" class="w-full object-cover max-h-[600px]">
                     </div>
                 {% endif %}
 
-                {# Stats #}
-                <div class="flex gap-6 text-sm text-[#78716c]
-                            border-t border-[#292524] pt-4">
-
-                    {# Like #}
-                    {% set is_liked = tweet.isLikedByUser(app.user) %}
-                    <span class="flex items-center gap-1 text-xs {{ is_liked ? 'text-[#c5a059]' : 'text-[#78716c]' }} like-btn"
-                          data-url="{{ path('app_tweet_like', {'id': tweet.id}) }}"
-                          data-id="{{ tweet.id }}">
-                        <svg class="w-4 h-4 like-icon" fill="{{ is_liked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                        </svg>
-                        <span class="like-count font-bold">{{ tweet.likesCount }}</span> likes
-                    </span>
-
-                    {# Vues #}
-                    <span class="flex items-center gap-1 text-xs text-[#78716c]">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                        </svg>
-                        <span class="view-count" data-id="{{ tweet.id }}">{{ tweet.viewsCount }}</span> vues
-                    </span>
-
+                <div class="text-[#78716c] text-sm font-cinzel py-4 border-y border-[#292524] flex gap-2">
+                    <span>{{ tweet.createdDate|date('h:i A') }}</span><span>·</span><span>{{ tweet.createdDate|date('d M Y') }}</span>
                 </div>
 
+                <div class="flex gap-8 text-sm text-[#78716c] py-4 border-b border-[#292524]">
+                    <div class="flex items-center gap-2"><span class="font-bold text-[#e7e5e4]">{{ tweet.getReplies|length }}</span> Réponses</div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-[#e7e5e4]">{{ tweet.likesCount }}</span> Likes</div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-[#e7e5e4]">{{ tweet.viewsCount }}</span> Vues</div>
+                </div>
             </div>
         </div>
     </div>
 
-    {# JS pour incrémenter le compteur de vues #}
+    {% if app.user %}
+        <div class="p-4 border-b border-[#292524] bg-[#0c0a09]">
+            <div class="flex gap-4">
+                <div class="w-10 h-10 rounded-full bg-[#292524] shrink-0 overflow-hidden mt-2">
+                    {% if app.user.avatar %}
+                        <img src="{{ asset(app.user.avatar) }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-[#78716c] font-bold">{{ app.user.username|slice(0,1)|upper }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="flex-1">
+                    {{ form_start(form) }}
+
+                    <div class="relative">
+                        <span class="text-[#57534e] text-xs mb-1 block">En réponse à <span class="text-[#c5a059]">@{{ tweet.author.username }}</span></span>
+                        {{ form_widget(form.content, {
+                            'attr': {
+                                'class': 'w-full bg-transparent text-[#e7e5e4] text-lg placeholder-[#44403c] outline-none resize-none overflow-hidden min-h-[80px]',
+                                'placeholder': 'Graver votre réponse...',
+                                'rows': 1,
+                                'id': 'reply-content'
+                            }
+                        }) }}
+
+                        <div id="reply-image-preview-container" class="hidden mt-2 relative w-fit group">
+                            <img id="reply-image-preview" src="" class="rounded-xl max-h-48 border border-[#292524]">
+                            <button type="button" onclick="clearReplyImage()" class="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hover:bg-black transition">✕</button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-[#292524]">
+                        <div class="text-[#c5a059]">
+                            <label for="{{ form.imageFile.vars.id }}" class="cursor-pointer hover:bg-[#c5a059]/10 p-2 rounded-full transition flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 828 0 012.828 0L16 16m-2-2l1.586-1.586a2 828 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </label>
+                            {{ form_widget(form.imageFile, {'attr': {'class': 'hidden', 'onchange': 'previewReplyImage(event)'}}) }}
+                        </div>
+
+                        <button type="submit" class="px-6 py-2 bg-[#c5a059] text-[#0c0a09] font-cinzel font-bold text-sm rounded-full hover:bg-[#b59049] transition">
+                            RÉPONDRE
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# --- LISTE DES RÉPONSES --- #}
+    <div class="flex flex-col pb-20">
+        {% for reply in tweet.replies %}
+            <div class="border-b border-[#292524] p-4 hover:bg-[#1c1917]/30 transition duration-300">
+                <div class="flex gap-4">
+                    <a href="{{ path('app_user_show', {'id': reply.author.id}) }}" class="shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-[#292524] border border-[#44403c] flex items-center justify-center text-[#78716c] overflow-hidden">
+                            {% if reply.author.avatar %}
+                                <img src="{{ asset(reply.author.avatar) }}" class="w-full h-full object-cover">
+                            {% else %}
+                                {{ reply.author.username|slice(0,1)|upper }}
+                            {% endif %}
+                        </div>
+                    </a>
+
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-[#e7e5e4] font-cinzel">{{ reply.author.getName }}</span>
+                            <span class="text-[#78716c] text-sm">@{{ reply.author.username }}</span>
+                            <span class="text-[#44403c] text-xs">•</span>
+                            <span class="text-[#78716c] text-xs">{{ reply.createdDate|date('d M') }}</span>
+                        </div>
+
+                        <div class="text-[#57534e] text-xs mb-1">En réponse à <a href="#" class="text-[#c5a059]">@{{ tweet.author.username }}</a></div>
+
+                        <p class="text-[#d6d3d1] mb-2 font-serif text-[15px] whitespace-pre-wrap">{{ reply.content }}</p>
+
+                        {% if reply.imageFilename %}
+                            <div class="rounded-lg overflow-hidden border border-[#292524] mb-2 max-w-md">
+                                <img src="{{ asset('uploads/tweets/' ~ reply.imageFilename) }}" class="w-full object-cover">
+                            </div>
+                        {% endif %}
+
+                        {# Actions Réponse #}
+                        <div class="flex gap-6 text-[#78716c] text-xs mt-2">
+                            {# Bouton commentaire de la réponse #}
+                            <a href="{{ path('app_tweet_show', {'id': reply.id}) }}" class="flex items-center gap-1 hover:text-[#c5a059] transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                <span>{{ reply.getReplies|length }}</span>
+                            </a>
+
+                            {% set is_reply_liked = reply.isLikedByUser(app.user) %}
+                            <div class="flex items-center gap-1 cursor-pointer like-btn {{ is_reply_liked ? 'text-[#c5a059]' : 'hover:text-[#c5a059]' }}"
+                                 data-url="{{ path('app_tweet_like', {'id': reply.id}) }}"
+                                 data-id="{{ reply.id }}">
+                                <svg class="w-4 h-4 like-icon" fill="{{ is_reply_liked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                                <span class="like-count">{{ reply.likesCount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="p-10 text-center border-b border-[#292524]">
+                <p class="text-[#57534e] font-serif italic text-sm">Le silence règne ici...</p>
+            </div>
+        {% endfor %}
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const viewEl = document.querySelector(".view-count[data-id='{{ tweet.id }}']");
-            if (!viewEl) return;
+        function previewReplyImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('reply-image-preview');
+                    const container = document.getElementById('reply-image-preview-container');
+                    if(img && container) {
+                        img.src = e.target.result;
+                        container.classList.remove('hidden');
+                    }
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
-            fetch('{{ path('app_tweet_view', {id: tweet.id}) }}', {
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(res => res.json())
-                .then(data => { viewEl.textContent = data.views; })
-                .catch(err => console.error(err));
-        });
+        function clearReplyImage() {
+            const input = document.querySelector('input[name*="[imageFile]"]');
+            if(input) input.value = '';
+            document.getElementById('reply-image-preview-container').classList.add('hidden');
+            document.getElementById('reply-image-preview').src = '';
+        }
+
+        const replyTextarea = document.getElementById('reply-content');
+        if(replyTextarea) {
+            replyTextarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
     </script>
-
 {% endblock %}

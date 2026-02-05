@@ -38,15 +38,22 @@ class Tweet extends BaseEntity
     #[ORM\Column(options: ['default'=>0])]
     private ?int $replyCount = 0;
 
-    #[ORM\ManyToOne(targetEntity: self::class)]
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'replies')]
     private ?self $parentTweet = null;
 
-    #[ORM\OneToMany(mappedBy: 'tweet', cascade: ['remove'],  targetEntity: Like::class)]
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parentTweet', cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['createdDate' => 'DESC'])] // Ou 'id' => 'DESC' selon ta préférence
+    private Collection $replies;
+
+    #[ORM\OneToMany(targetEntity: Like::class, mappedBy: 'tweet', cascade: ['remove'])]
     private Collection $likes;
 
     public function __construct()
     {
         $this->likes = new ArrayCollection();
+        $this->replies = new ArrayCollection();
+
+        parent::__construct();
     }
 
     public function getId(): ?int
@@ -147,6 +154,31 @@ class Tweet extends BaseEntity
     {
         $this->parentTweet = $parentTweet;
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tweet>
+     */
+    public function getReplies(): Collection
+    {
+        return $this->replies;
+    }
+
+    public function addReply(self $reply): static
+    {
+        if (!$this->replies->contains($reply)) {
+            $this->replies->add($reply);
+            $reply->setParentTweet($this);
+        }
+        return $this;
+    }
+
+    public function removeReply(self $reply): static
+    {
+        if ($this->replies->removeElement($reply) && ($reply->getParentTweet() === $this)) {
+                $reply->setParentTweet(null);
+        }
         return $this;
     }
 

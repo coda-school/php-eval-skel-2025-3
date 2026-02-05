@@ -55,13 +55,43 @@ class TweetController extends AbstractController
         return $this->json(['views' => $tweet->getViewsCount()]);
     }
 
-    #[Route('/{_locale}/tweet/{id}', name: 'app_tweet_show', requirements: ['_locale' => 'en|fr'], methods: ['GET'])]
-    public function show(Tweet $tweet): Response
+    #[Route('/{_locale}/tweet/{id}', name: 'app_tweet_show', requirements: ['_locale' => 'en|fr'], methods: ['GET', 'POST'])]
+    public function show(
+        Tweet $tweet,
+        Request $request,
+        EntityManagerInterface $em,
+        TranslatorInterface $translator
+    ): Response
     {
+        $reply = new Tweet();
+        $form = $this->createForm(TweetType::class, $reply);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+
+            $user = $this->getUser();
+            $reply->setAuthor($user);
+            $reply->setParentTweet($tweet);
+            $tweet->setReplyCount($tweet->getReplyCount() + 1);
+
+            $em->persist($reply);
+            $em->flush();
+
+            $this->addFlash('success', $translator->trans('notifications.reply_posted', [], 'stela'));
+
+            return $this->redirectToRoute('app_tweet_show', [
+                'id' => $tweet->getId(),
+                '_locale' => $request->getLocale()
+            ]);
+        }
+
         return $this->render('tweet/show.html.twig', [
             'tweet' => $tweet,
+            'form' => $form->createView(),
         ]);
     }
+
     #[Route('/{_locale}/tweet/{id}/edit', name: 'app_tweet_edit', requirements: ['_locale' => 'en|fr'], methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function edit(Request $request, Tweet $tweet, EntityManagerInterface $entityManager, TranslatorInterface $translator, SluggerInterface $slugger): Response

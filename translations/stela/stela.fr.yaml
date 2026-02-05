@@ -4,12 +4,12 @@ login_subtitle: "Incarnez votre vérité"
 
 # 📍 NAVIGATION & INTERFACE
 menu:
-    sanctuary: "L'Agora"         # Fil d'actualité
-    incarnation: "Sanctuaire"    # Profil
-    ritual: "Structure"          # Paramètres
-    leave: "Dissiper l'esprit"   # Logout
-    messages: "Les Murmures"     # DM
-    notifications: "Les Échos"   # Notifs
+    sanctuary: "L'Agora"
+    incarnation: "Sanctuaire"
+    ritual: "Structure"
+    leave: "Dissiper l'esprit"
+    messages: "Les Murmures"
+    notifications: "Les Échos"
 
 sidebar:
     search_placeholder: "Sonder..."
@@ -36,10 +36,10 @@ checklist:
 
 # ⚡ ACTIONS (BOUTONS)
 buttons:
-    register: "Prêter Serment"      # S'inscrire
-    register2: "Prêter Serment"     # Lien vers inscription
-    login: "S'incarner"             # Se connecter
-    save: "Sceller la Structure"    # Sauvegarder settings
+    register: "Prêter Serment"
+    register2: "Prêter Serment"
+    login: "S'incarner"
+    save: "Sceller la Structure"
     back: "Retour vers l'Agora"
 
 links:
@@ -63,26 +63,39 @@ tweet:
     placeholder: "Grave ta vérité..."
     delete_confirm: "Voulez-vous vraiment éroder cette stèle ?"
 
+    # --- NOUVELLES CLÉS POUR LA PAGE SHOW ---
+    page_title: "Stèle de %username%"
+    replying_to: "En réponse à"
+    placeholder_reply: "Graver votre annotation..."
+    no_replies: "Le silence règne ici..."
+
     # Stats et Métriques
-    views: "Contemplations"
-    likes: "Consécrations"
+    stats:
+        views: "Contemplations" # Tooltip sur l'oeil
 
     actions:
-        engrave: "Graver"       # Poster
-        delete: "Éroder"        # Supprimer
-        reply: "Annoter"        # Commenter
-        like: "Consacrer"       # Liker
-        retweet: "Répliquer"    # Retweet
-        share: "Propager"       # Partager
-        report: "Dénoncer"      # Signaler
-        pin: "Pierre Angulaire" # Epingler
+        engrave: "Graver"
+        delete: "Éroder"
+        reply: "Annoter"
+        like: "Consacrer"
+        unlike: "Retirer la consécration" # Pour le JS toggle
+        retweet: "Répliquer"
+        share: "Propager"
+        report: "Dénoncer"
+        pin: "Pierre Angulaire"
+        # Boutons & Tooltips
+        view_profile: "Voir le Sanctuaire"
+        reply_btn: "ANNOTER"
+        add_image: "Ajouter une gravure"
+        remove_image: "Éroder l'image"
+        publish_reply: "Sceller l'annotation"
 
 # 🏛️ PROFIL & SOCIAL
 profile:
     bio:
         empty: "n'a gravé aucune légende."
-    subscriptions: "Allégeances" # Abonnements
-    followers: "Initiés"      # Abonnés
+    subscriptions: "Allégeances"
+    followers: "Initiés"
     tabs:
         steles: "Stèles Gravées"
         replies: "Annotations"
@@ -99,7 +112,7 @@ settings:
     title: "Structure"
     subtitle: "Configurez votre incarnation"
     preferences_title: "Préférences"
-    theme: "Atmosphère"
+    theme: "Atmosphère (non fonctionnel)"
     language: "Langue"
     notifications: "Recevoir les Échos"
     private_account: "Sanctuaire Hermétique (Privé)"
@@ -112,6 +125,7 @@ notifications:
     tweet_created: "Votre vérité a été gravée dans la pierre."
     tweet_updated: "Votre stèle a été corrigée."
     tweet_deleted: "La stèle a été réduite en poussière."
+    reply_posted: "Votre annotation a été gravée."
 
 # Modale de suppression
 modal:

@@ -1,33 +1,40 @@
 {% extends '_layouts/in_app.html.twig' %}
 
-{#
-============================================================================
-CONFIGURATION DE LA PAGE
-- hide_sidebar_right : Active le layout 2 colonnes (via in_app.html.twig)
-============================================================================
-#}
+{# --- CONFIGURATION --- #}
 {% set hide_sidebar_right = true %}
 
 {% block title %}{{ 'settings.title'|trans({}, 'stela') }} - STELA{% endblock %}
 
-{#
-============================================================================
-1. STYLES SPÉCIFIQUES
-Bloque le redimensionnement manuel de la bio pour préserver le design.
-============================================================================
-#}
+{# --- STYLES & FIX OS --- #}
 {% block stylesheets %}
     {{ parent() }}
     <style>
         textarea.stela-input { resize: none; }
+
+        select.stela-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: transparent;
+            color: #e7e5e4;
+            cursor: pointer;
+            padding-right: 2.5rem;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2378716c' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+
+        /* Fix Fond/Texte Options (Linux/Windows) */
+        select.stela-select option {
+            background-color: #0c0a09;
+            color: #e7e5e4;
+            padding: 10px;
+        }
     </style>
 {% endblock %}
 
-{#
-============================================================================
-2. THÈME DU FORMULAIRE & ERREURS GLOBALES
-============================================================================
-#}
+{# --- THEME FORMULAIRE --- #}
 {% form_theme form _self %}
 
 {% block form_errors %}
@@ -48,16 +55,10 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
 {% block content %}
     <div class="min-h-screen stela-bg flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 w-full">
 
-        {# Conteneur Principal (Largeur augmentée pour le mode Paysage) #}
         <div class="stela-slab p-8 sm:p-12 relative overflow-hidden w-full max-w-4xl mx-auto">
             <div class="stela-texture"></div>
 
-            {#
-            ============================================================================
-            3. EN-TÊTE DU GRIMOIRE
-            Titre et Sous-titre
-            ============================================================================
-            #}
+            {# --- HEADER --- #}
             <div class="relative z-10 mb-10 text-center border-b border-[#292524] pb-6">
                 <h1 class="text-3xl font-cinzel text-[#e7e5e4] tracking-widest font-bold mb-2">
                     {{ 'settings.title'|trans({}, 'stela') }}
@@ -69,21 +70,12 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
 
             {{ form_start(form, {'attr': {'class': 'relative z-10', 'id': 'settings-form'}}) }}
 
-            {#
-            ============================================================================
-            4. GRILLE DU FORMULAIRE (2 COLONNES)
-            ============================================================================
-            #}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 relative">
 
-                {#
-                ------------------------------------------------------------------------
-                4.1 COLONNE GAUCHE : IDENTITÉ (Avatar, Noms, Bio)
-                ------------------------------------------------------------------------
-                #}
+                {# --- COLONNE GAUCHE : IDENTITE --- #}
                 <div class="space-y-8">
 
-                    {# A. Avatar #}
+                    {# Avatar #}
                     <div class="text-center">
                         <div class="relative inline-block group">
                             <div class="h-24 w-24 rounded-full p-1 border border-[#292524] bg-[#0c0a09] shadow-2xl mx-auto overflow-hidden relative flex items-center justify-center">
@@ -104,9 +96,8 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                         </div>
                     </div>
 
-                    {# B. Champs Texte #}
+                    {# Inputs Texte #}
                     <div class="space-y-6">
-                        {# DisplayName #}
                         <div class="stela-group">
                             {{ form_label(form.displayName, null, {'label_attr': {'class': 'stela-label'}}) }}
                             <div class="stela-input-groove">
@@ -116,7 +107,6 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                             {{ form_errors(form.displayName) }}
                         </div>
 
-                        {# Username #}
                         <div class="stela-group">
                             {{ form_label(form.username, null, {'label_attr': {'class': 'stela-label'}}) }}
                             <div class="stela-input-groove">
@@ -126,7 +116,6 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                             {{ form_errors(form.username) }}
                         </div>
 
-                        {# Bio #}
                         <div class="stela-group">
                             {{ form_label(form.bio, null, {'label_attr': {'class': 'stela-label'}}) }}
                             <div class="stela-input-groove relative">
@@ -139,14 +128,10 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                     </div>
                 </div>
 
-                {# SÉPARATEUR VERTICAL (Uniquement visible sur grands écrans) #}
+                {# Séparateur #}
                 <div class="hidden lg:block absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#292524] to-transparent -translate-x-1/2"></div>
 
-                {#
-                ------------------------------------------------------------------------
-                4.2 COLONNE DROITE : PRÉFÉRENCES (Thème, Langue, Options)
-                ------------------------------------------------------------------------
-                #}
+                {# --- COLONNE DROITE : PREFERENCES --- #}
                 <div class="flex flex-col justify-between space-y-8">
 
                     <div class="space-y-8">
@@ -154,25 +139,25 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                             {{ 'settings.preferences_title'|trans({}, 'stela') }}
                         </h3>
 
-                        {# A. Sélecteurs #}
+                        {# Selecteurs #}
                         <div class="grid grid-cols-1 gap-6">
                             <div class="stela-group">
                                 {{ form_label(form.theme, null, {'label_attr': {'class': 'stela-label'}}) }}
                                 <div class="stela-input-groove">
-                                    {{ form_widget(form.theme, {'attr': {'class': 'stela-input'}}) }}
+                                    {{ form_widget(form.theme, {'attr': {'class': 'stela-input stela-select'}}) }}
                                     <div class="stela-bar"></div>
                                 </div>
                             </div>
                             <div class="stela-group">
                                 {{ form_label(form.language, null, {'label_attr': {'class': 'stela-label'}}) }}
                                 <div class="stela-input-groove">
-                                    {{ form_widget(form.language, {'attr': {'class': 'stela-input'}}) }}
+                                    {{ form_widget(form.language, {'attr': {'class': 'stela-input stela-select'}}) }}
                                     <div class="stela-bar"></div>
                                 </div>
                             </div>
                         </div>
 
-                        {# B. Checkboxes Rituelles #}
+                        {# Checkboxes #}
                         <div class="space-y-6 pt-2 bg-[#0c0a09]/50 p-6 rounded-lg border border-[#292524]">
                             <label class="stela-check-container group">
                                 {{ form_widget(form.notificationsEnabled, {'attr': {'class': 'hidden peer'}}) }}
@@ -202,7 +187,7 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                         </div>
                     </div>
 
-                    {# C. Bouton d'Action #}
+                    {# Bouton Action #}
                     <div class="pt-6 mt-auto">
                         <button type="submit" class="stela-btn-original group">
                             <div class="stela-btn-shadow"></div>
@@ -223,14 +208,8 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
         </div>
     </div>
 
-    {#
-    ============================================================================
-    5. LOGIQUE JAVASCRIPT
-    Preview Avatar, Animations inputs & Compteur de Bio
-    ============================================================================
-    #}
+    {# --- SCRIPT --- #}
     <script>
-        // 5.1 Prévisualisation Avatar
         function previewAvatar(event) {
             const input = event.target;
             if (input.files && input.files[0]) {
@@ -246,7 +225,6 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // 5.2 Animation Barre Input (Focus/Blur)
             const inputs = document.querySelectorAll('.stela-input');
             inputs.forEach(input => {
                 const bar = input.nextElementSibling;
@@ -254,7 +232,6 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                 input.addEventListener('blur', () => { if (bar) bar.classList.remove('valid'); });
             });
 
-            // 5.3 Styles Checkboxes
             const checkboxes = document.querySelectorAll('input[type="checkbox"]');
             checkboxes.forEach(chk => {
                 const updateCheck = () => {
@@ -267,7 +244,6 @@ Bloque le redimensionnement manuel de la bio pour préserver le design.
                 updateCheck();
             });
 
-            // 5.4 Compteur de caractères Bio
             const bioInput = document.getElementById('{{ form.bio.vars.id }}');
             const bioCounter = document.getElementById('bio-counter');
             if (bioInput && bioCounter) {

@@ -1,12 +1,13 @@
 {% extends '_layouts/in_app.html.twig' %}
+{% import '_macros/tweet.html.twig' as macros %}
 
-{% block title %}Incarnation de {{ user.username }}{% endblock %}
+{% block title %}{{ 'tweet.page_title'|trans({'%username%': user.username}, 'stela') }} - STELA{% endblock %}
 
 {% block content %}
     <div class="relative">
         {# Header Navigation (Retour) #}
         <div class="absolute top-0 left-0 p-4 z-20 flex items-center gap-6 bg-gradient-to-b from-black/80 to-transparent w-full">
-            <a href="{{ path('app_home') }}" class="p-2 bg-black/50 rounded-full hover:bg-black/70 text-white transition backdrop-blur-md">
+            <a href="{{ path('app_home') }}" class="p-2 bg-black/50 rounded-full hover:bg-black/70 text-white transition backdrop-blur-md" title="{{ 'menu.sanctuary'|trans({}, 'stela') }}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             </a>
             <h2 class="font-bold text-lg font-cinzel text-white leading-none shadow-black drop-shadow-md">{{ user.username }}</h2>
@@ -19,21 +20,21 @@
         </div>
 
         <div class="px-4 pb-4 relative">
-            {# Bloc Action (Suivre / Modifier) - Positionné à droite #}
+            {# Bloc Action (Suivre / Paramètres) #}
             <div class="absolute top-4 right-4 z-10">
                 {% if app.user == user %}
-                    <a href="{{ path('app_user_settings') }}" class="border border-[#44403c] text-[#e7e5e4] px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#292524] transition hover:border-[#c5a059]">
+                    <a href="{{ path('app_user_settings') }}" class="border border-[#44403c] text-[#e7e5e4] px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#292524] transition hover:border-[#c5a059]" title="{{ 'profile.actions.edit_profile'|trans({}, 'stela') }}">
                         {{ 'profile.actions.edit_profile'|trans({}, 'stela') }}
                     </a>
                 {% else %}
                     <form action="{{ path('app_user_follow', {'userToFollow': user.id, '_locale': app.request.locale}) }}" method="POST">
                         {% if app.user in user.followers %}
-                            <button type="submit" class="border border-[#44403c] text-[#e7e5e4] px-4 py-1.5 rounded-full text-sm font-bold hover:bg-red-900/20 hover:text-red-400 hover:border-red-900 transition group">
+                            <button type="submit" class="border border-[#44403c] text-[#e7e5e4] px-4 py-1.5 rounded-full text-sm font-bold hover:bg-red-900/20 hover:text-red-400 hover:border-red-900 transition group" title="{{ 'profile.actions.unfollow'|trans({}, 'stela') }}">
                                 <span class="group-hover:hidden">{{ 'profile.actions.status_following'|trans({}, 'stela') }}</span>
                                 <span class="hidden group-hover:inline">{{ 'profile.actions.unfollow'|trans({}, 'stela') }}</span>
                             </button>
                         {% else %}
-                            <button type="submit" class="bg-[#e7e5e4] text-black px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#c5a059] transition">
+                            <button type="submit" class="bg-[#e7e5e4] text-black px-4 py-1.5 rounded-full text-sm font-bold hover:bg-[#c5a059] transition" title="{{ 'profile.actions.follow'|trans({}, 'stela') }}">
                                 {{ 'profile.actions.follow'|trans({}, 'stela') }}
                             </button>
                         {% endif %}
@@ -74,117 +75,68 @@
             </div>
         </div>
 
-        {# Onglets #}
+        {# --- ONGLETS (Switch JS) --- #}
         <div class="flex border-b border-[#292524] mt-2">
-            <div class="flex-1 text-center py-4 text-[#e7e5e4] font-bold text-sm border-b-2 border-[#c5a059] hover:bg-[#1c1917]/50 cursor-pointer transition">
+            <button onclick="switchTab('steles')" id="btn-steles" class="flex-1 text-center py-4 text-[#e7e5e4] font-bold text-sm border-b-2 border-[#c5a059] hover:bg-[#1c1917]/50 cursor-pointer transition">
                 {{ 'profile.tabs.steles'|trans({}, 'stela') }}
-            </div>
-            <div class="flex-1 text-center py-4 text-[#78716c] font-medium text-sm hover:bg-[#1c1917]/50 cursor-pointer transition">
+            </button>
+            <button onclick="switchTab('replies')" id="btn-replies" class="flex-1 text-center py-4 text-[#78716c] font-medium text-sm border-b-2 border-transparent hover:bg-[#1c1917]/50 cursor-pointer transition">
                 {{ 'profile.tabs.replies'|trans({}, 'stela') }}
-            </div>
-            <div class="flex-1 text-center py-4 text-[#78716c] font-medium text-sm hover:bg-[#1c1917]/50 cursor-pointer transition">
-                {{ 'profile.tabs.media'|trans({}, 'stela') }}
-            </div>
+            </button>
         </div>
     </div>
 
-    {# Liste des Tweets du User #}
+    {# --- CONTENU DES ONGLETS --- #}
     <div class="pb-20">
-        {% for tweet in user.tweets|sort((a, b) => b.createdDate <=> a.createdDate) %}
-            {# Correction: Ajout des URLs data pour le JS global #}
-            <article class="p-4 border-b border-[#292524] hover:bg-[#1c1917]/30 transition cursor-pointer tweet-card group"
-                     data-id="{{ tweet.id }}"
-                     data-view-url="{{ path('app_tweet_view', {'id': tweet.id}) }}">
 
-                <div class="flex gap-4">
-                    {# Avatar Petit #}
-                    <div class="flex-shrink-0">
-                        <div class="w-10 h-10 rounded-full bg-[#292524] border border-[#44403c] flex items-center justify-center text-[#78716c] font-bold overflow-hidden">
-                            {% if tweet.author.avatar %}
-                                <img src="{{ asset(tweet.author.avatar) }}" class="w-full h-full object-cover" alt="{{ tweet.author.username }}">
-                            {% else %}
-                                {{ tweet.author.username|slice(0, 1)|upper }}
-                            {% endif %}
-                        </div>
-                    </div>
+        {# 1. ONGLET STÈLES (Tweets originaux) #}
+        <div id="tab-content-steles">
+            {# Filtre : seulement les tweets qui ne sont pas des réponses (n'ayant aucun tweet parent) #}
+            {% set root_tweets = user.tweets|filter(t => t.parentTweet is null)|sort((a, b) => b.createdDate <=> a.createdDate) %}
 
-                    <div class="flex-1 min-w-0">
-                        {# Header Tweet #}
-                        <div class="flex items-center justify-between mb-1">
-                            <div class="flex items-center gap-2 truncate">
-                                <span class="font-bold text-[#e7e5e4] font-cinzel">{{ tweet.author.getName() }}</span>
-                                <span class="text-[#78716c] text-xs">@{{ tweet.author.username }}</span>
-                                <span class="text-[#78716c] text-xs">• {{ tweet.createdDate|date('d M') }}</span>
-                            </div>
-
-                            {# Actions Propriétaire (Edit / Delete) #}
-                            {% if app.user == tweet.author %}
-                                <div class="flex items-center ml-2 gap-1">
-                                    <a href="{{ path('app_tweet_edit', {'id': tweet.id}) }}"
-                                       class="text-[#44403c] hover:text-[#c5a059] hover:bg-[#c5a059]/10 rounded-full p-1.5 transition"
-                                       title="Corriger">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                        </svg>
-                                    </a>
-
-                                    <form method="post" action="{{ path('app_tweet_delete', {'id': tweet.id}) }}" class="delete-form flex">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tweet.id) }}">
-                                        <button type="submit" class="text-[#44403c] hover:text-red-500 hover:bg-red-900/10 rounded-full p-1.5 transition" title="{{ 'tweet.actions.delete'|trans({}, 'stela') }}">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        {# Contenu #}
-                        <p class="text-[#d6d3d1] whitespace-pre-wrap leading-relaxed text-[15px] font-serif mb-3 break-words">{{ tweet.content }}</p>
-
-                        {# Image #}
-                        {% if tweet.imageFilename %}
-                            <div class="mt-2 mb-3 rounded-xl overflow-hidden border border-[#292524] max-w-full">
-                                <img src="{{ asset('uploads/tweets/' ~ tweet.imageFilename) }}" class="w-full h-auto object-cover max-h-[500px]" alt="Illustration">
-                            </div>
-                        {% endif %}
-
-                        {# Actions #}
-                        <div class="flex justify-between max-w-md mt-3 text-[#78716c]">
-                            <button class="flex items-center gap-2 hover:text-blue-400 group text-xs transition">
-                                <div class="p-2 rounded-full group-hover:bg-blue-400/10">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                                </div>
-                                <span>{{ tweet.replyCount }}</span>
-                            </button>
-
-                            {# Like corrigé avec persistance de l'état #}
-                            {% set is_liked = tweet.isLikedByUser(app.user) %}
-                            <button class="flex items-center gap-2 group text-xs transition like-btn {{ is_liked ? 'text-[#c5a059]' : 'hover:text-[#c5a059] text-[#78716c]' }}"
-                                    data-url="{{ path('app_tweet_like', {'id': tweet.id}) }}"
-                                    data-id="{{ tweet.id }}">
-                                <div class="p-2 rounded-full group-hover:bg-[#c5a059]/10">
-                                    <svg class="w-4 h-4 like-icon" fill="{{ is_liked ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                </div>
-                                <span class="like-count font-bold">{{ tweet.likesCount }}</span>
-                            </button>
-
-                            {# Views #}
-                            <div class="flex items-center gap-2 group text-xs text-[#57534e]">
-                                <div class="p-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                </div>
-                                <span class="view-count">{{ tweet.viewsCount }}</span>
-                            </div>
-                        </div>
-                    </div>
+            {% for tweet in root_tweets %}
+                {{ macros.tweet_card(tweet, app) }}
+            {% else %}
+                <div class="p-10 text-center border-b border-[#292524]">
+                    <p class="text-[#57534e] font-serif italic text-lg">{{ 'tweet.nothing'|trans({}, 'stela') }}</p>
                 </div>
-            </article>
-        {% else %}
-            <div class="p-10 text-center border-t border-[#292524]">
-                <p class="text-[#57534e] font-serif italic text-lg">{{ 'tweet.nothing'|trans({}, 'stela') }}</p>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
+
+        {# ONGLET ANNOTATIONS #}
+        <div id="tab-content-replies" class="hidden">
+            {# Filtre : seulement les tweets qui sont des réponses (ayant un tweet parent) #}
+            {% set replies = user.tweets|filter(t => t.parentTweet is not null)|sort((a, b) => b.createdDate <=> a.createdDate) %}
+
+            {% for tweet in replies %}
+                {{ macros.tweet_card(tweet, app) }}
+            {% else %}
+                <div class="p-10 text-center border-b border-[#292524]">
+                    <p class="text-[#57534e] font-serif italic text-lg">{{ 'tweet.no_replies'|trans({}, 'stela') }}</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
+
+    {# --- SCRIPT --- #}
+    <script>
+        function switchTab(tabName) {
+            const btnSteles = document.getElementById('btn-steles');
+            const btnReplies = document.getElementById('btn-replies');
+            const contentSteles = document.getElementById('tab-content-steles');
+            const contentReplies = document.getElementById('tab-content-replies');
+
+            if (tabName === 'steles') {
+                btnSteles.className = "flex-1 text-center py-4 text-[#e7e5e4] font-bold text-sm border-b-2 border-[#c5a059] hover:bg-[#1c1917]/50 cursor-pointer transition";
+                btnReplies.className = "flex-1 text-center py-4 text-[#78716c] font-medium text-sm border-b-2 border-transparent hover:bg-[#1c1917]/50 cursor-pointer transition";
+                contentSteles.classList.remove('hidden');
+                contentReplies.classList.add('hidden');
+            } else {
+                btnSteles.className = "flex-1 text-center py-4 text-[#78716c] font-medium text-sm border-b-2 border-transparent hover:bg-[#1c1917]/50 cursor-pointer transition";
+                btnReplies.className = "flex-1 text-center py-4 text-[#e7e5e4] font-bold text-sm border-b-2 border-[#c5a059] hover:bg-[#1c1917]/50 cursor-pointer transition";
+                contentSteles.classList.add('hidden');
+                contentReplies.classList.remove('hidden');
+            }
+        }
+    </script>
 {% endblock %}

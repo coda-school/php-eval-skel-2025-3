@@ -4,10 +4,10 @@ login_subtitle: "Embody your truth"
 
 # 📍 NAVIGATION & INTERFACE
 menu:
-    sanctuary: "The Agora"       # Fil d'actu
-    incarnation: "Sanctuary"     # Profil
-    ritual: "Structure"          # Settings
-    leave: "Dispel Spirit"       # Logout
+    sanctuary: "The Agora"
+    incarnation: "Sanctuary"
+    ritual: "Structure"
+    leave: "Dispel Spirit"
     messages: "Murmurs"
     notifications: "Echoes"
 
@@ -63,19 +63,32 @@ tweet:
     placeholder: "Engrave your truth..."
     delete_confirm: "Do you truly wish to erode this stele?"
 
+    # --- NEW KEYS FOR SHOW PAGE ---
+    page_title: "Stele by %username%"
+    replying_to: "In response to"
+    placeholder_reply: "Engrave your annotation..."
+    no_replies: "Silence reigns here..."
+
     # Stats
-    views: "Contemplations"
-    likes: "Consecrations"
+    stats:
+        views: "Contemplations" # Tooltip for the eye icon
 
     actions:
         engrave: "Engrave"
         delete: "Erode"
         reply: "Annotate"
         like: "Consecrate"
+        unlike: "Withdraw Consecration" # For the JS toggle
         retweet: "Replicate"
         share: "Propagate"
         report: "Denounce"
         pin: "Cornerstone"
+        # Buttons & Tooltips
+        view_profile: "View Sanctuary"
+        reply_btn: "ANNOTATE"
+        add_image: "Add an engraving"
+        remove_image: "Erode image"
+        publish_reply: "Seal annotation"
 
 # 🏛️ PROFILE & SOCIAL
 profile:
@@ -99,7 +112,7 @@ settings:
     title: "Structure"
     subtitle: "Configure your incarnation"
     preferences_title: "Preferences"
-    theme: "Atmosphere"
+    theme: "Atmosphere (not working)"
     language: "Language"
     notifications: "Receive Echoes"
     private_account: "Hermetic Sanctuary (Private)"
@@ -109,9 +122,10 @@ settings:
 
 # --- MODALES & POPUPS ---
 notifications:
-    tweet_created: "Your truth has been engraved in stone.."
+    tweet_created: "Your truth has been engraved in stone."
     settings_saved: "Your preferences have been sealed in stone."
     tweet_deleted: "The Stele has been reduced to dust."
+    reply_posted: "Your annotation has been engraved."
 
 modal:
     delete_title: "Erosion"
@@ -121,7 +135,7 @@ modal:
 
 # EDIT PAGE
 edit:
-    title: "Ritual of Correction"
+    title: "Rituel of Correction"
     close: "Close"
     content_label: "Your Truth"
     current_image: "Current Stele"

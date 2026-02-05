@@ -27,7 +27,6 @@ class TweetRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    // src/Repository/TweetRepository.php
 
     public function findAllMainTweets(): array
     {
@@ -39,6 +38,18 @@ class TweetRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-    // Note: Pour les tweets d'un user spécifique, $user->getTweets() suffit
-    // si on ajoute l'annotation @ORM\OrderBy({"createdDate" = "DESC"}) dans l'entité User sur la relation OneToMany
+
+    public function findPopularTweets(int $limit = 50): array
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.isDeleted = :deleted')
+            ->setParameter('deleted', false)
+            ->orderBy('t.likesCount', 'DESC')
+            ->addOrderBy('t.viewsCount', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+
 }

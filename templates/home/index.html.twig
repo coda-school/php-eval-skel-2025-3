@@ -6,77 +6,102 @@
     <div class="sticky top-0 z-40 bg-[#0c0a09]/80 backdrop-blur-md border-b border-[#292524] p-4 block lg:hidden">
         <h2 class="font-cinzel font-bold text-[#c5a059] text-xl">{{ 'title'|trans({}, 'stela') }}</h2>
     </div>
+    {% if form is defined and form %}
+        <div class="border-b border-[#292524] p-4 bg-[#0c0a09]/50 backdrop-blur-sm">
+            {{ form_start(form) }}
 
-    <div class="border-b border-[#292524] p-4 bg-[#0c0a09]/50 backdrop-blur-sm">
-        {{ form_start(form) }}
+            {# GESTION ERREURS #}
+            {% if form.content.vars.errors|length > 0 %}
+                {% for error in form.content.vars.errors %}
+                    <div class="stela-flash-trigger" data-type="error" data-message="{{ error.message }}"></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.vars.errors|length > 0 %}
+                {% for error in form.vars.errors %}
+                    <div class="stela-flash-trigger" data-type="error" data-message="{{ error.message }}"></div>
+                {% endfor %}
+            {% endif %}
+            {% if form.imageFile.vars.errors|length > 0 %}
+                {% for error in form.imageFile.vars.errors %}
+                    <div class="stela-flash-trigger" data-type="error" data-message="{{ error.message }}"></div>
+                {% endfor %}
+            {% endif %}
 
-        {# GESTION ERREURS #}
-        {% if form.content.vars.errors|length > 0 %}
-            {% for error in form.content.vars.errors %}
-                <div class="stela-flash-trigger" data-type="error" data-message="{{ error.message }}"></div>
-            {% endfor %}
-        {% endif %}
-        {% if form.vars.errors|length > 0 %}
-            {% for error in form.vars.errors %}
-                <div class="stela-flash-trigger" data-type="error" data-message="{{ error.message }}"></div>
-            {% endfor %}
-        {% endif %}
-        {% if form.imageFile.vars.errors|length > 0 %}
-            {% for error in form.imageFile.vars.errors %}
-                <div class="stela-flash-trigger" data-type="error" data-message="{{ error.message }}"></div>
-            {% endfor %}
-        {% endif %}
-
-        <div class="flex gap-4">
-            <div class="w-10 h-10 rounded-full bg-[#292524] flex items-center justify-center text-[#57534e] flex-shrink-0 overflow-hidden border border-[#44403c]">
-                {% if app.user and app.user.avatar %}
-                    <img src="{{ asset(app.user.avatar) }}" class="w-full h-full object-cover">
-                {% elseif app.user %}
-                    <span class="font-bold">{{ app.user.username|slice(0,1)|upper }}</span>
-                {% else %}
-                    ?
-                {% endif %}
-            </div>
-
-            <div class="flex-grow pt-2">
-                {{ form_widget(form.content, {
-                    'attr': {
-                    'id': 'tweet-content',
-                    'oninput': 'updateTweetStats(this)',
-                    'class': 'w-full bg-transparent text-[#e7e5e4] placeholder-[#57534e] text-lg resize-none focus:outline-none overflow-hidden box-border py-2 min-h-[3rem]',
-                    'rows': '1'
-                }
-                }) }}
-
-                <div class="flex justify-end items-start mt-1">
-                    <div id="char-counter" class="text-[10px] text-[#57534e] font-mono tracking-widest transition-colors">0/280</div>
+            <div class="flex gap-4">
+                <div
+                    class="w-10 h-10 rounded-full bg-[#292524] flex items-center justify-center text-[#57534e] flex-shrink-0 overflow-hidden border border-[#44403c]">
+                    {% if app.user and app.user.avatar %}
+                        <img src="{{ asset(app.user.avatar) }}" class="w-full h-full object-cover">
+                    {% elseif app.user %}
+                        <span class="font-bold">{{ app.user.username|slice(0,1)|upper }}</span>
+                    {% else %}
+                        ?
+                    {% endif %}
                 </div>
 
-                <div id="home-image-preview-container" class="hidden mt-4 relative w-fit group">
-                    <img id="home-image-preview" src="" class="rounded-xl max-h-64 border border-[#292524] shadow-lg object-cover">
-                    <button type="button" id="home-remove-image-btn" class="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black transition backdrop-blur-sm">✕</button>
-                </div>
+                <div class="flex-grow pt-2">
+                    {{ form_widget(form.content, {
+                        'attr': {
+                            'id': 'tweet-content',
+                            'oninput': 'updateTweetStats(this)',
+                            'class': 'w-full bg-transparent text-[#e7e5e4] placeholder-[#57534e] text-lg resize-none focus:outline-none overflow-hidden box-border py-2 min-h-[3rem]',
+                            'rows': '1'
+                        }
+                    }) }}
 
-                <div class="flex items-center justify-between mt-4 border-t border-[#292524] pt-3">
-                    <div class="flex gap-2 text-[#c5a059]">
-                        <label for="{{ form.imageFile.vars.id }}" class="cursor-pointer p-2 rounded-full hover:bg-[#c5a059]/10 transition" title="Ajouter une gravure">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        </label>
-                        {{ form_widget(form.imageFile, {'attr': {'class': 'hidden', 'onchange': 'previewHomeImage(event)'}}) }}
-
-                        <button type="button" class="p-2 rounded-full hover:bg-[#c5a059]/10 transition opacity-50 cursor-not-allowed"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
-                        <button type="button" class="p-2 rounded-full hover:bg-[#c5a059]/10 transition opacity-50 cursor-not-allowed"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></button>
+                    <div class="flex justify-end items-start mt-1">
+                        <div id="char-counter"
+                             class="text-[10px] text-[#57534e] font-mono tracking-widest transition-colors">0/280
+                        </div>
                     </div>
 
-                    <button type="submit" class="bg-[#c5a059] hover:bg-[#b59049] text-[#0c0a09] font-bold py-1.5 px-5 rounded-full transition font-cinzel text-sm uppercase tracking-wide disabled:opacity-50">
-                        {{ 'tweet.actions.engrave'|trans({}, 'stela') }}
-                    </button>
+                    <div id="home-image-preview-container" class="hidden mt-4 relative w-fit group">
+                        <img id="home-image-preview" src=""
+                             class="rounded-xl max-h-64 border border-[#292524] shadow-lg object-cover">
+                        <button type="button" id="home-remove-image-btn"
+                                class="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black transition backdrop-blur-sm">
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between mt-4 border-t border-[#292524] pt-3">
+                        <div class="flex gap-2 text-[#c5a059]">
+                            <label for="{{ form.imageFile.vars.id }}"
+                                   class="cursor-pointer p-2 rounded-full hover:bg-[#c5a059]/10 transition"
+                                   title="Ajouter une gravure">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </label>
+                            {{ form_widget(form.imageFile, {'attr': {'class': 'hidden', 'onchange': 'previewHomeImage(event)'}}) }}
+
+                            <button type="button"
+                                    class="p-2 rounded-full hover:bg-[#c5a059]/10 transition opacity-50 cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </button>
+                            <button type="button"
+                                    class="p-2 rounded-full hover:bg-[#c5a059]/10 transition opacity-50 cursor-not-allowed">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <button type="submit"
+                                class="bg-[#c5a059] hover:bg-[#b59049] text-[#0c0a09] font-bold py-1.5 px-5 rounded-full transition font-cinzel text-sm uppercase tracking-wide disabled:opacity-50">
+                            {{ 'tweet.actions.engrave'|trans({}, 'stela') }}
+                        </button>
+                    </div>
                 </div>
             </div>
+            {{ form_end(form) }}
         </div>
-        {{ form_end(form) }}
-    </div>
-
+    {% endif %}
     <div class="pb-20">
         {% for tweet in tweets %}
             <article onclick="window.location='{{ path('app_tweet_show', {
@@ -149,7 +174,8 @@
                                           action="{{ path('app_tweet_delete', {'id': tweet.id}) }}"
                                           class="delete-form flex">
 
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tweet.id) }}">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ tweet.id) }}">
 
                                         <button onclick="event.stopPropagation()"
                                                 type="submit"
@@ -248,7 +274,7 @@
 
     {# --- SCRIPTS --- #}
     <script>
-        window.updateTweetStats = function(textarea) {
+        window.updateTweetStats = function (textarea) {
             const counter = document.getElementById('char-counter');
             const maxLength = 280;
             textarea.style.height = 'auto';
@@ -257,11 +283,14 @@
                 const currentLength = textarea.value.length;
                 counter.textContent = `${currentLength}/${maxLength}`;
                 if (currentLength >= maxLength) {
-                    counter.classList.remove('text-[#57534e]', 'text-orange-500'); counter.classList.add('text-red-500');
+                    counter.classList.remove('text-[#57534e]', 'text-orange-500');
+                    counter.classList.add('text-red-500');
                 } else if (currentLength > maxLength * 0.9) {
-                    counter.classList.remove('text-[#57534e]', 'text-red-500'); counter.classList.add('text-orange-500');
+                    counter.classList.remove('text-[#57534e]', 'text-red-500');
+                    counter.classList.add('text-orange-500');
                 } else {
-                    counter.classList.remove('text-red-500', 'text-orange-500'); counter.classList.add('text-[#57534e]');
+                    counter.classList.remove('text-red-500', 'text-orange-500');
+                    counter.classList.add('text-[#57534e]');
                 }
             }
         };
@@ -270,10 +299,13 @@
             const input = event.target;
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const img = document.getElementById('home-image-preview');
                     const container = document.getElementById('home-image-preview-container');
-                    if(img && container) { img.src = e.target.result; container.classList.remove('hidden'); }
+                    if (img && container) {
+                        img.src = e.target.result;
+                        container.classList.remove('hidden');
+                    }
                 }
                 reader.readAsDataURL(input.files[0]);
             }
@@ -281,17 +313,19 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const removeBtn = document.getElementById('home-remove-image-btn');
-            if(removeBtn) {
-                removeBtn.addEventListener('click', function() {
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function () {
                     const input = document.querySelector('input[name*="[imageFile]"]');
-                    if(input) input.value = '';
+                    if (input) input.value = '';
                     document.getElementById('home-image-preview-container').classList.add('hidden');
                     document.getElementById('home-image-preview').src = '';
                 });
             }
             const textarea = document.getElementById('tweet-content');
-            if(textarea) {
-                window.requestAnimationFrame(() => { window.updateTweetStats(textarea); });
+            if (textarea) {
+                window.requestAnimationFrame(() => {
+                    window.updateTweetStats(textarea);
+                });
             }
         });
 

@@ -20,11 +20,11 @@ class HomeController extends AbstractController
 {
     #[Route('/{_locale}/home', name: 'app_home', requirements: ['_locale' => 'en|fr'], defaults: ['_locale' => 'fr'])]
     public function index(
-        Request $request,
-        TweetRepository $tweetRepository,
+        Request                $request,
+        TweetRepository        $tweetRepository,
         EntityManagerInterface $entityManager,
-        SluggerInterface $slugger,
-        TranslatorInterface $translator
+        SluggerInterface       $slugger,
+        TranslatorInterface    $translator
     ): Response
     {
         $tweet = new Tweet();
@@ -38,7 +38,7 @@ class HomeController extends AbstractController
             if ($imageFile) {
                 $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
 
                 try {
                     $imageFile->move($this->getParameter('tweets_directory'), $newFilename);
@@ -61,6 +61,17 @@ class HomeController extends AbstractController
         return $this->render('home/index.html.twig', [
             'tweets' => $tweets,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{_locale}/trends', name: 'app_tweet_popular', requirements: ['_locale' => 'en|fr'], methods: ['GET'])]
+    public function popular(TweetRepository $tweetRepository): Response
+    {
+        $tweets = $tweetRepository->findPopularTweets(50);
+
+        return $this->render('home/index.html.twig', [
+            'tweets' => $tweets,
+            'form' => null,
         ]);
     }
 

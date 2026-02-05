@@ -94,7 +94,7 @@
             const viewEl = document.querySelector(".view-count[data-id='{{ tweet.id }}']");
             if (!viewEl) return;
 
-            fetch('{{ path('app_tweet_view', {id: tweet.id}) }}', {
+            fetch('{{ path('app_tweet_view', {id: tweet.id, _locale: app.request.locale}) }}', {
                 method: 'POST',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })

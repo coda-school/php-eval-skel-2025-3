@@ -46,11 +46,15 @@ class TweetController extends AbstractController
     }
 
     #[Route('/{_locale}/tweet/{id}/view', name: 'app_tweet_view', requirements: ['_locale' => 'en|fr'], methods: ['POST'])]
-    public function view(Tweet $tweet, EntityManagerInterface $em): JsonResponse
+    public function view(Tweet $tweet, EntityManagerInterface $em, Request $request): JsonResponse
     {
-        if ($this->getUser() !== $tweet->getAuthor()) {
-            $tweet->setViewsCount($tweet->getViewsCount() + 1);
+        $session = $request->getSession();
+        $key = 'viewed_tweet_' . $tweet->getId();
+
+        if (!$session->has($key) && $this->getUser() !== $tweet->getAuthor()) {
+            $tweet->incrementViews();
             $em->flush();
+            $session->set($key, true);
         }
         return $this->json(['views' => $tweet->getViewsCount()]);
     }

@@ -1,51 +1,104 @@
-build# Symfony Docker
+# 🏛️ STELA - Social Network
 
-A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
-with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
+**Stela** est un réseau social thématique où les utilisateurs "s'incarnent" pour "graver" leurs pensées sur des "stèles". Ce projet est développé avec **Symfony**, **TailwindCSS** et **Docker**.
 
-![CI](https://github.com/dunglas/symfony-docker/workflows/CI/badge.svg)
+## Sommaire
+- [Fonctionnalités](#-fonctionnalités)
+- [Prérequis](#-prérequis)
+- [Installation](#-installation)
+- [Utilisation](#-utilisation)
+- [Stack Technique](#-stack-technique)
 
-## Getting Started
+---
 
-1. If not already done, [install Docker Compose](https://docs.docker.com/compose/install/) (v2.10+)
-2. Run `docker compose build --pull --no-cache` to build fresh images
-3. Run `docker compose up --wait` to set up and start a fresh Symfony project
-4. Open `https://localhost` in your favorite web browser and [accept the auto-generated TLS certificate](https://stackoverflow.com/a/15076602/1352334)
-5. Run `docker compose down --remove-orphans` to stop the Docker containers.
+## Fonctionnalités
 
-## Features
+Voici la liste des fonctionnalités implémentées dans le projet, classées par complexité :
 
-- Production, development and CI ready
-- Just 1 service by default
-- Blazing-fast performance thanks to [the worker mode of FrankenPHP](https://frankenphp.dev/docs/worker/)
-- [Installation of extra Docker Compose services](docs/extra-services.md) with Symfony Flex
-- Automatic HTTPS (in dev and prod)
-- HTTP/3 and [Early Hints](https://symfony.com/blog/new-in-symfony-6-3-early-hints) support
-- Real-time messaging thanks to a built-in [Mercure hub](https://symfony.com/doc/current/mercure.html)
-- [Vulcain](https://vulcain.rocks) support
-- Native [XDebug](docs/xdebug.md) integration
-- Super-readable configuration
+### 🟢 Niveau Facile
+- **Dates Relatives** : Affichage dynamique du temps écoulé depuis la publication (ex: "il y a 10 min", "1h", "2j") grâce à une extension Twig personnalisée (`ago`).
+- **Tweets Populaires** : Algorithme de tri mettant en avant les publications ayant le plus d'engagement (Likes + Vues) dans la section "Tendances".
 
-**Enjoy!**
+### 🟡 Niveau Intermédiaire
+- **Ajout d'Images** : Possibilité d'uploader des images lors de la création d'un tweet ou d'une réponse (gestion via `VichUploader` et `Slugger`).
+- **Système de Likes (Consécrations)** : Interaction en temps réel (AJAX) sans rechargement de page. Le compteur et l'état du bouton s'actualisent instantanément.
+- **Système de Commentaires (Annotations)** : Possibilité de répondre aux tweets. Les réponses sont gérées comme des entités `Tweet` avec un lien `parentTweet`, affichées dans un onglet dédié sur le profil.
+- **Statistiques de Vues** : Chaque affichage d'un tweet incrémente un compteur de vues (Contemplations), visible sur la carte du tweet. On ne peut pas ajouter une vue pour son propre tweet, avec un maximum d'une vue par utilisateur.
 
-## Docs
+### 🔵 Autres Fonctionnalités (Core)
+- **Authentification & Inscription** : Connexion sécurisée, hashage de mot de passe, contraintes de validation.
+- **Fil d'Actualité (Feed)** :
+    - Pagination performante (KnpPaginator).
+    - Mélange intelligent des tweets des abonnements et de suggestions de contenu.
+    - Tri antéchronologique.
+- **Profil Utilisateur** : Édition du profil (Bio, Avatar), onglets séparés (Stèles / Annotations).
+- **Internationalisation (i18n)** : Site entièrement traduit en Français et Anglais.
 
-1. [Options available](docs/options.md)
-2. [Using Symfony Docker with an existing project](docs/existing-project.md)
-3. [Support for extra services](docs/extra-services.md)
-4. [Deploying in production](docs/production.md)
-5. [Debugging with Xdebug](docs/xdebug.md)
-6. [TLS Certificates](docs/tls.md)
-7. [Using MySQL instead of PostgreSQL](docs/mysql.md)
-8. [Using Alpine Linux instead of Debian](docs/alpine.md)
-9. [Using a Makefile](docs/makefile.md)
-10. [Updating the template](docs/updating.md)
-11. [Troubleshooting](docs/troubleshooting.md)
+---
 
-## License
+## Prérequis
 
-Symfony Docker is available under the MIT License.
+Avant de commencer, assurez-vous d'avoir installé :
+* [Docker](https://www.docker.com/) & Docker Compose
+* [Git](https://git-scm.com/)
 
-## Credits
+---
 
-Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+## Installation
+
+Suivez ces étapes pour lancer le projet en local :
+
+1.  **Cloner le projet**
+    ```bash
+    git clone https://github.com/coda-school/php-eval-skel-2025-3.git
+    ```
+
+2.  **Lancer les conteneurs Docker**
+    ```bash
+    docker compose up -d
+    ```
+
+3.  **Installer les dépendances PHP**
+    ```bash
+    docker compose exec php composer install
+    ```
+
+4.  **Configurer la Base de Données**
+    ```bash
+    # Création de la BDD
+    docker compose exec php php bin/console doctrine:database:create
+
+    # Exécution des migrations (Création des tables)
+    docker compose exec php php bin/console doctrine:migrations:migrate
+    ```
+
+5.  **Charger les données de test (Fixtures)**
+    *Cette étape est cruciale pour tester les "Tweets Populaires" et le Feed.*
+    ```bash
+    docker compose exec php php bin/console doctrine:fixtures:load --no-interaction
+    ```
+
+---
+
+## Utilisation
+
+Une fois l'installation terminée, accédez au site via :
+👉 **http://localhost** (ou le port configuré dans votre docker-compose).
+
+### Actions principales
+1.  **Graver (Poster)** : Utilisez le formulaire en haut du fil d'actualité pour poster du texte et une image.
+2.  **Explorer** : Visualisation des Stèles (Tweets) sur la page principale, ainsi que des rumeurs sur le côté droit.
+3.  **Interagir** : Cliquez sur le cœur pour "Consacrer" (Liker) ou sur la bulle pour "Annoter" (Commenter).
+4.  **Paramètres** : Cliquez sur votre avatar puis "Structure" pour changer la langue ou le thème.
+
+---
+
+## Stack Technique
+
+* **Backend** : Symfony 7, PHP 8.3
+* **Base de données** : PostgreSQL
+* **Frontend** : Twig, TailwindCSS, JavaScript
+
+---
+
+*© 2025 Stela Corp. - Le Scribe attend votre vérité.*

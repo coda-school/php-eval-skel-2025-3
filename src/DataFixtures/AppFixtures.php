@@ -28,7 +28,7 @@ class AppFixtures extends Fixture
 
         // --- 1. ADMIN USER (Batman) ---
         $admin = new User();
-        $admin->setEmail('admin@com')
+        $admin->setEmail('admin@stela.com')
             ->setUsername('Batman')
             ->setDisplayName('Le Chevalier Noir')
             ->setPassword($this->hasher->hashPassword($admin, 'password'))

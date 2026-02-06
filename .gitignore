@@ -18,5 +18,3 @@
 
 .idea/
 compose.override.yaml
-.env
-.env.dev

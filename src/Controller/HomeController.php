@@ -6,6 +6,7 @@ use App\Entity\Tweet;
 use App\Form\TweetType;
 use App\Repository\TweetRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +25,8 @@ class HomeController extends AbstractController
         TweetRepository        $tweetRepository,
         EntityManagerInterface $entityManager,
         SluggerInterface       $slugger,
-        TranslatorInterface    $translator
+        TranslatorInterface    $translator,
+        PaginatorInterface     $paginator
     ): Response
     {
         $tweet = new Tweet();
@@ -56,10 +58,14 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('app_home');
         }
 
-        $tweets = $tweetRepository->findAllMainTweets();
+        $pagination = $paginator->paginate(
+            $tweetRepository->findFeedQuery(),
+            $request->query->getInt('page', 1),
+            20
+        );
 
         return $this->render('home/index.html.twig', [
-            'tweets' => $tweets,
+            'tweets' => $pagination,
             'form' => $form->createView(),
         ]);
     }

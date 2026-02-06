@@ -13,3 +13,10 @@
 
 Doc symfony
 https://symfony.com/doc/current/controller/upload_file.html
+
+## Documentation globale - Adam :
+
+- Doc officielle symfony
+- IA pour certains éléments CSS / JS
+- IA pour l'idée de vérifier si un tweet possède un parent ou non pour séparer 
+les commentaires des tweets originaux sur le profil.

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Tweet;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,27 +17,16 @@ class TweetRepository extends ServiceEntityRepository
         parent::__construct($registry, Tweet::class);
     }
 
-    /**
-     * Récupère les tweets pour le fil d'actualité global (ordre décroissant)
-     */
-    public function findLatestTweets(): array
+    public function findFeedQuery(): Query
     {
         return $this->createQueryBuilder('t')
-            ->orderBy('t.createdDate', 'DESC')
-            ->setMaxResults(50) // Limite pour performance
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findAllMainTweets(): array
-    {
-        return $this->createQueryBuilder('t')
+            ->addSelect('u')
+            ->leftJoin('t.author', 'u')
             ->andWhere('t.parentTweet IS NULL')
             ->andWhere('t.isDeleted = :deleted')
             ->setParameter('deleted', false)
             ->orderBy('t.createdDate', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
     }
 
     public function findPopularTweets(int $limit = 50): array
@@ -50,6 +40,4 @@ class TweetRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-
 }

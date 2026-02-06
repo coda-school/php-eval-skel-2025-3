@@ -12,6 +12,8 @@
         "doctrine/doctrine-bundle": "^2.18",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.5",
+        "knplabs/knp-paginator-bundle": "^6.10",
+        "knplabs/knp-time-bundle": "^2.5",
         "runtime/frankenphp-symfony": "^0.2.0",
         "symfony/asset": "7.4.*",
         "symfony/asset-mapper": "7.4.*",

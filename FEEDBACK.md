@@ -34,8 +34,7 @@ Pour y faire face, nous avons :
 La seconde difficulté à été que nous avons eu de nombreux problèmes avec docker. A chaque push tout les autres membres du groupe avaient des erreurs de docker.
 Pour y remédier nous avons :
 - Communiquer avec notre groupe pour trouver des solutions
-- Lu de la documentation
-- fait en sorte de ne plus avoir les mêmes erreurs les prochaines fois.
+- faire en sorte de ne plus avoir les mêmes erreurs les prochaines fois.
 
 
 ---
